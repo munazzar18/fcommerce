@@ -1,7 +1,6 @@
 import { Category } from "src/category/category.entity";
-import { Product_Inventory } from "src/product_inventory/product_inventory.entity";
 import { UserEntity } from "src/user/user.entity";
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Timestamp, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Timestamp, UpdateDateColumn } from "typeorm";
 
 
 @Entity()
@@ -21,6 +20,9 @@ export class Product {
     @Column({nullable: false})
     price: number;
 
+    @Column({nullable: false})
+    quantity: number;
+
     @Column('simple-array', {nullable: false})
     images: string[]
 
@@ -35,13 +37,6 @@ export class Product {
 
     @Column({nullable: false})
     categoryId: number;
-
-    @Column({nullable: false})
-    product_inventory_id: number;
-
-    @OneToOne(() => Product_Inventory, (product_inventory) => product_inventory.product)
-    @JoinColumn({name: 'product_inventory_id'})
-    product_inventory: Product_Inventory
 
     @ManyToOne(() => UserEntity, (user) => user.product)
     @JoinColumn({name: 'userId'})

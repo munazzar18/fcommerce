@@ -4,13 +4,11 @@ import { Product } from './product.entity';
 import { In, Repository } from 'typeorm';
 import { CreateProductDto, UpdateProductDto } from './productDto.dto';
 import { UserEntity } from 'src/user/user.entity';
-import { Product_Inventory } from 'src/product_inventory/product_inventory.entity';
 
 @Injectable()
 export class ProductService {
     constructor(
-        @InjectRepository(Product) private productRepo: Repository<Product>,
-        @InjectRepository(Product_Inventory) private product_inventory_repo: Repository<Product_Inventory>
+        @InjectRepository(Product) private productRepo: Repository<Product>
     ){}
 
     async allProducts(page: number){
@@ -41,12 +39,11 @@ export class ProductService {
 
     async searchFilter(search: any){
         const products = await this.productRepo.createQueryBuilder().select()
-        .where(`LIKE(title) AGAINST ('*${search}*' IN NATURAL LANGUAGE MODE)`)
-        .orWhere(`LIKE(description) AGAINST( '*${search}*' IN NATURAL LANGUAGE MODE )`)
+        .where(`MATCH(title) AGAINST( '*${search}*' IN NATURAL LANGUAGE MODE )`)
+        .orWhere(`MATCH(description) AGAINST( '*${search}*' IN NATURAL LANGUAGE MODE )`)
         .getMany()
-
     if(products.length === 0){
-        throw new NotFoundException(`No product found against ${search}`)
+        throw new NotFoundException('No product found')
     } else {
         return products
     }
@@ -63,16 +60,6 @@ export class ProductService {
         })
         const savedProduct = await this.productRepo.save(product)
 
-        const productInventory = this.product_inventory_repo.create({
-            quantity: createDto.quantity,
-            productId: savedProduct.id
-        })
-
-        savedProduct.product_inventory = productInventory
-        savedProduct.product_inventory_id = productInventory.id
-
-        await this.productRepo.save(savedProduct)
-
         return savedProduct
     }
 
@@ -82,7 +69,6 @@ export class ProductService {
                 id: id,
                 userId: authUser.id
             }, 
-            relations: ['product_inventory'],
         })
         if(!product){
             throw new UnauthorizedException('You are not authorized to perform this action')
@@ -93,18 +79,6 @@ export class ProductService {
             product.price = updateDto.price;
             product.images = updateDto.images;
         }
-        if(updateDto.quantity !== undefined){
-            if(product.product_inventory){
-                product.product_inventory.quantity = updateDto.quantity
-            } else {
-                const productInventory = this.product_inventory_repo.create({
-                    quantity: updateDto.quantity
-                })
-                product.product_inventory = productInventory
-            }
-        }
-        await this.productRepo.save(product)
-        return product
     }
 
 }

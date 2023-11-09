@@ -9,7 +9,6 @@ import { DataSource } from 'typeorm';
 import { UserEntity } from './user/user.entity';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
-import { ProductInventoryModule } from './product_inventory/product_inventory.module';
 
 @Module({
   imports: [
@@ -32,7 +31,6 @@ import { ProductInventoryModule } from './product_inventory/product_inventory.mo
     }),
     ProductModule,
     CategoryModule,
-    ProductInventoryModule
   ],
   controllers: [],
   providers: [],

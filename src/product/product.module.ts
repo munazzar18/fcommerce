@@ -3,13 +3,19 @@ import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './product.entity';
-import { Product_Inventory } from 'src/product_inventory/product_inventory.entity';
+import { UserEntity } from 'src/user/user.entity';
+import { UserService } from 'src/user/user.service';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtConstants } from 'src/constants/jwtConstants';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product, Product_Inventory])
+    TypeOrmModule.forFeature([Product, UserEntity]),
+    JwtModule.register({
+      secret: JwtConstants.secret
+    })
   ],
   controllers: [ProductController],
-  providers: [ProductService]
+  providers: [ProductService, UserService]
 })
 export class ProductModule {}
