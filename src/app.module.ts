@@ -7,6 +7,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtConstants } from './constants/jwtConstants';
 import { DataSource } from 'typeorm';
 import { UserEntity } from './user/user.entity';
+import { ProductModule } from './product/product.module';
+import { CategoryModule } from './category/category.module';
+import { ProductInventoryModule } from './product_inventory/product_inventory.module';
 
 @Module({
   imports: [
@@ -26,7 +29,10 @@ import { UserEntity } from './user/user.entity';
     PassportModule,
     JwtModule.register({
       secret: JwtConstants.secret
-    })
+    }),
+    ProductModule,
+    CategoryModule,
+    ProductInventoryModule
   ],
   controllers: [],
   providers: [],

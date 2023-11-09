@@ -1,6 +1,7 @@
 import { Exclude } from "class-transformer";
+import { Product } from "src/product/product.entity";
 import { Role } from "src/roles/role.enum";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity()
@@ -28,6 +29,10 @@ export class UserEntity {
 
     @Column({type: 'enum', enum: Role, default: Role.User})
     roles: Role
+
+    @OneToMany(() => Product, (product) => product.user)
+    @JoinColumn({name: 'product'})
+    product: Product[]
 }
 
 export class serializedUser {
