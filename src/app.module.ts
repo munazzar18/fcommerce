@@ -6,9 +6,13 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConstants } from './constants/jwtConstants';
 import { DataSource } from 'typeorm';
-import { UserEntity } from './user/user.entity';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { OrderModule } from './order/order.module';
+import { OrderItemModule } from './order_item/order_item.module';
+import { CartModule } from './cart/cart.module';
+import { PaymentDetailModule } from './payment_detail/payment_detail.module';
 
 @Module({
   imports: [
@@ -31,6 +35,13 @@ import { CategoryModule } from './category/category.module';
     }),
     ProductModule,
     CategoryModule,
+    MulterModule.register({
+      dest: './uploads',
+    }),
+    OrderModule,
+    OrderItemModule,
+    CartModule,
+    PaymentDetailModule,
   ],
   controllers: [],
   providers: [],

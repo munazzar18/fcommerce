@@ -1,7 +1,9 @@
 import { Exclude } from "class-transformer";
+import { Cart } from "src/cart/cart.entity";
+import { Order } from "src/order/order.entity";
 import { Product } from "src/product/product.entity";
 import { Role } from "src/roles/role.enum";
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity()
@@ -30,9 +32,16 @@ export class UserEntity {
     @Column({type: 'enum', enum: Role, default: Role.User})
     roles: Role
 
+    @OneToOne(() => Cart)
+    @JoinColumn()
+    cart: Cart;
+
     @OneToMany(() => Product, (product) => product.user)
     @JoinColumn({name: 'product'})
     product: Product[]
+
+    @OneToMany(()=> Order, (order) => order.user)
+    orders: Order[]
 }
 
 export class serializedUser {
