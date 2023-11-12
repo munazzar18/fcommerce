@@ -17,11 +17,11 @@ export class Payment_Detail {
     @Column()
     provider: string;
 
-    @CreateDateColumn({ type: 'timestamp'})
-    createdAt: Date;
+    @CreateDateColumn()
+    created_at: Date;
   
-    @UpdateDateColumn({ type: 'timestamp', onUpdate: 'timestamp' })
-    updatedAt: Date;
+    @UpdateDateColumn()
+    updated_at: Date;
 
     @OneToOne(() => Order, (order) => order.payment_detail)
     order: Order;

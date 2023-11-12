@@ -28,11 +28,11 @@ export class Product {
     @Column('simple-array', {nullable: false})
     images: string[]
 
-    @CreateDateColumn({ type: 'timestamp'})
-    createdAt: Date;
+    @CreateDateColumn()
+    created_at: Date;
   
-    @UpdateDateColumn({ type: 'timestamp', onUpdate: 'timestamp' })
-    updatedAt: Date;
+    @UpdateDateColumn()
+    updated_at: Date;
 
     @Column({nullable: false})
     userId: number;

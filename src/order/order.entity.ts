@@ -11,14 +11,14 @@ export class Order {
     @Column()
     total: number
 
-    @CreateDateColumn({ type: 'timestamp'})
-    createdAt: Date;
+    @CreateDateColumn()
+    created_at: Date;
   
-    @UpdateDateColumn({ type: 'timestamp',  onUpdate: 'timestamp' })
-    updatedAt: Date;
+    @UpdateDateColumn()
+    updated_at: Date;
 
     @OneToOne(() => Payment_Detail)
-    @JoinColumn()
+    @JoinColumn({name: 'payment_detail'})
     payment_detail: Payment_Detail;
 
     @OneToMany(() => Order_Item, orderItem => orderItem.order)

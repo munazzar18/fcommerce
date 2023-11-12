@@ -11,11 +11,11 @@ export class Cart {
     @Column()
     quantity: number
 
-    @CreateDateColumn({ type: 'timestamp'})
-    createdAt: Date;
+    @CreateDateColumn()
+    created_at: Date;
   
-    @UpdateDateColumn({ type: 'timestamp',onUpdate: 'timestamp' })
-    updatedAt: Date;
+    @UpdateDateColumn()
+    updated_at: Date;
 
     @OneToOne(()=> UserEntity, (user)=> user.cart)
     user: UserEntity

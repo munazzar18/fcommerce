@@ -24,7 +24,6 @@ import { PaymentDetailModule } from './payment_detail/payment_detail.module';
       password: '',
       database: 'fcommerce',
       autoLoadEntities: true,
-      entities: [],
       synchronize: true,
     }),
     UserModule,
