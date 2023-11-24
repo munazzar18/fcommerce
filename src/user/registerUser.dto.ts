@@ -21,7 +21,6 @@ export class RegisterUserDto {
     @IsNotEmpty()
     address: string;
 
-    @IsNotEmpty()
     roles: Role;
 
     @IsNotEmpty()

@@ -46,5 +46,5 @@ import { PaymentDetailModule } from './payment_detail/payment_detail.module';
   providers: [],
 })
 export class AppModule {
-  constructor(private datasource: DataSource){}
+  constructor(private datasource: DataSource) { }
 }

@@ -19,7 +19,6 @@ export class CreateProductDto {
     @IsNotEmpty()
     quantity: number;
 
-    @IsNotEmpty()
     userId: number;
 
     @IsNotEmpty()
@@ -44,7 +43,6 @@ export class UpdateProductDto {
     @IsNotEmpty()
     quantity: number;
 
-    @IsNotEmpty()
     userId: number;
 
     @IsNotEmpty()
