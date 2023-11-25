@@ -21,23 +21,34 @@ export class OrderItemService {
         return this.orderItemRepo.findOneBy({ id })
     }
 
-    async create(productId: number, authUser: UserEntity) {
+    async create(productId: number,  quantity: number, authUser: UserEntity,) {
         const selectedProduct = await this.prodRepo.findOne({
             where: {
                 id: productId,
                 userId: authUser.id
             }
-        })
-        if (selectedProduct) {
-            if (selectedProduct.quantity > 0) {
-                const item = selectedProduct.quantity
+        });
 
-            } else {
-                throw new BadRequestException('Product is out of stock!')
-            }
-        } else {
-            throw new NotFoundException('No product found for this id')
+        if (!selectedProduct) {
+            throw new NotFoundException('No product found for this id');
         }
-    }
 
+        if (selectedProduct.quantity <= 0 || selectedProduct.quantity < quantity) {
+            throw new BadRequestException('Product is out of stock or quantity exceeded!');
+        }
+
+        const orderItem = new Order_Item();
+        orderItem.product = selectedProduct;
+        orderItem.quantity = quantity;
+       
+        selectedProduct.quantity -= quantity;
+       
+        await this.prodRepo.save(selectedProduct);
+        await this.orderItemRepo.save(orderItem);
+
+        return orderItem;
+    }
 }
+
+
+

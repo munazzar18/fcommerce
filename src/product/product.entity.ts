@@ -16,7 +16,7 @@ export class Product {
     title: string;
 
     @Index({fulltext: true})
-    @Column({nullable: false})
+    @Column({nullable: false, type:'text'})
     description: string;
 
     @Column({nullable: false})
