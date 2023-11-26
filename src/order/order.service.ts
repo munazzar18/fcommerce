@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './order.entity';
 import { In, Repository } from 'typeorm';
@@ -7,6 +7,7 @@ import { Product } from 'src/product/product.entity';
 import { Payment_Detail } from 'src/payment_detail/payment_detail.entity';
 import { UserEntity } from 'src/user/user.entity';
 import { Status } from 'src/payment_detail/payment_status.enum';
+import { sendJson } from 'src/helpers/helpers';
 
 @Injectable()
 export class OrderService {
@@ -26,18 +27,24 @@ export class OrderService {
         return this.orderRepo.findOneBy({ id })
     }
 
-    async create(orderItemId: number, quantity: number, authUser: UserEntity, ) {
+    async create(orderItemId: number, quantity: number, authUser: UserEntity,) {
 
-        const orderItem = await this.order_item_repo
-        .createQueryBuilder('orderItem')
-        .where('orderItem.id = :id', { id: orderItemId })
-        .leftJoinAndSelect('orderItem.product', 'product') 
-        .getOne();
+        const orderItem = await this.order_item_repo.findOne({
+            where: {
+                id: orderItemId
+            },
+            relations: ['product']
+        })
 
 
-        console.log("OrderItem", orderItem)
-        if(!orderItem){
-         return
+        // .createQueryBuilder('orderItem')
+        // .where('orderItem.id = :id', { id: orderItemId })
+        // .leftJoinAndSelect('orderItem.product', 'product')
+        // .getOne();
+
+
+        if (!orderItem) {
+            throw new NotFoundException(sendJson(false, "No item find to place order"))
         }
         const totalPrice = orderItem.product.price * quantity
 
@@ -49,7 +56,7 @@ export class OrderService {
         const savedPaymentDetail = await this.paymentRepo.save(paymentDetail)
 
         const order = new Order()
-        order.orderItems = orderItem
+        order.orderItems = [orderItem]
         order.payment_detail = savedPaymentDetail
         order.total = totalPrice
         order.user = authUser

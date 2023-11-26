@@ -13,19 +13,19 @@ export class Order {
 
     @CreateDateColumn()
     created_at: Date;
-  
+
     @UpdateDateColumn()
     updated_at: Date;
 
     @OneToOne(() => Payment_Detail)
-    @JoinColumn({name: 'payment_detail'})
+    @JoinColumn({ name: 'payment_detail' })
     payment_detail: Payment_Detail;
 
     @OneToMany(() => Order_Item, orderItem => orderItem.order)
-    orderItems: Order_Item;
+    orderItems: Order_Item[];
 
-    @ManyToOne(()=> UserEntity, (user) => user.orders)
+    @ManyToOne(() => UserEntity, (user) => user.orders)
     user: UserEntity
 
-   
+
 }
