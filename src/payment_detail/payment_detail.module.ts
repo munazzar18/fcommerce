@@ -3,9 +3,17 @@ import { PaymentDetailController } from './payment_detail.controller';
 import { PaymentDetailService } from './payment_detail.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment_Detail } from './payment_detail.entity';
+import { UserEntity } from 'src/user/user.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtConstants } from 'src/constants/jwtConstants';
+import { Order } from 'src/order/order.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Payment_Detail])],
+  imports:[TypeOrmModule.forFeature([Payment_Detail,Order,UserEntity]),
+  JwtModule.register({
+    secret: JwtConstants.secret
+  })
+],
   controllers: [PaymentDetailController],
   providers: [PaymentDetailService]
 })

@@ -35,14 +35,6 @@ export class OrderService {
             },
             relations: ['product']
         })
-
-
-        // .createQueryBuilder('orderItem')
-        // .where('orderItem.id = :id', { id: orderItemId })
-        // .leftJoinAndSelect('orderItem.product', 'product')
-        // .getOne();
-
-
         if (!orderItem) {
             throw new NotFoundException(sendJson(false, "No item find to place order"))
         }
@@ -52,6 +44,7 @@ export class OrderService {
         paymentDetail.amount = totalPrice
         paymentDetail.status = Status.Pending
         paymentDetail.provider = "JazzCash"
+        paymentDetail.payment = 0
 
         const savedPaymentDetail = await this.paymentRepo.save(paymentDetail)
 

@@ -26,6 +26,4 @@ export class Order {
 
     @ManyToOne(() => UserEntity, (user) => user.orders)
     user: UserEntity
-
-
 }

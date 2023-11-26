@@ -15,6 +15,9 @@ export class Payment_Detail {
     status: Status;
 
     @Column()
+    payment: number;
+
+    @Column()
     provider: string;
 
     @CreateDateColumn()
