@@ -26,36 +26,34 @@ export class OrderService {
         return this.orderRepo.findOneBy({ id })
     }
 
-    async create(productIds: number[], authUser: UserEntity, quantity: number) {
+    async create(orderItemId: number, quantity: number, authUser: UserEntity, ) {
 
-        // const products = await this.productRepo.find({
-        //     where: {
-        //         id: In(productIds)
-        //     }
-        // })
-        // console.log("Product:", products)
-        // const total = products.reduce((sum, product) => sum + product.price, 0)
+        const orderItem = await this.order_item_repo
+        .createQueryBuilder('orderItem')
+        .where('orderItem.id = :id', { id: orderItemId })
+        .leftJoinAndSelect('orderItem.product', 'product') 
+        .getOne();
 
-        // const paymentDetail = await this.paymentRepo.save({
-        //     amount: total,
-        //     status: Status.Pending,
-        //     providers: "JazzCash",
-        // })
 
-        // const order = await this.orderRepo.save({
-        //     total,
-        //     payment_detail: paymentDetail,
-        //     user: authUser
-        // })
+        console.log("OrderItem", orderItem)
+        if(!orderItem){
+         return
+        }
+        const totalPrice = orderItem.product.price * quantity
 
-        // const orderItem = products.map(product => ({
-        //     quantity: quantity,
-        //     product: product,
-        //     order: order
-        // }))
+        const paymentDetail = new Payment_Detail()
+        paymentDetail.amount = totalPrice
+        paymentDetail.status = Status.Pending
+        paymentDetail.provider = "JazzCash"
 
-        // await this.order_item_repo.save(orderItem)
+        const savedPaymentDetail = await this.paymentRepo.save(paymentDetail)
 
-        // return order
+        const order = new Order()
+        order.orderItems = orderItem
+        order.payment_detail = savedPaymentDetail
+        order.total = totalPrice
+        order.user = authUser
+        const savedOrder = await this.orderRepo.save(order)
+        return savedOrder
     }
 }

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './product.entity';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { CreateProductDto, UpdateProductDto } from './productDto.dto';
 import { UserEntity } from 'src/user/user.entity';
 
@@ -30,24 +30,24 @@ export class ProductService {
                 categoryId: In(categoryIds)
             }
         })
-        if (products.length === 0) {
-            throw new NotFoundException('No product found for this category')
-        }
-        else {
-            return products
-        }
+        return products
+      
     }
 
     async searchFilter(search: any) {
         const products = await this.productRepo.createQueryBuilder().select()
-            .where(`MATCH(title) AGAINST( '*${search}*' IN NATURAL LANGUAGE MODE )`)
-            .orWhere(`MATCH(description) AGAINST( '*${search}*' IN NATURAL LANGUAGE MODE )`)
+            .where(`MATCH(title) AGAINST( '${search}' IN NATURAL LANGUAGE MODE )`)
+            .orWhere(`(description) LIKE '%${search}%' `)
             .getMany()
-        if (products.length === 0) {
-            throw new NotFoundException('No product found')
-        } else {
             return products
-        }
+        
+        // const products = await this.productRepo.find({
+        //     where: [
+        //         {title: ILike(`%${search}%`)},
+        //         {description: ILike(`%${search}%`)}
+        //     ]
+        // })
+        // return products
     }
 
     async productById(id: number) {

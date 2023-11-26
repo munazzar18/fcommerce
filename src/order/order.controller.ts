@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { sendJson } from 'src/helpers/helpers';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -23,13 +23,15 @@ export class OrderController {
         return sendJson(true, "Order fetched Successfully", order)
     }
 
-    // @Post()
-    // @UseGuards(AuthGuard)
-    // async createOrder(@Body() @Body() { productIds, quantity }: { productIds: number[], quantity: number }, @Request() req) {
-    //     const user: UserEntity = req.user
-    //     console.log("Product id:", productIds)
-    //     const order = await this.orderService.create(productIds, user, quantity)
-    //     return sendJson(true, "Order created Successfully", order)
-    // }
+    @Post()
+    @UseGuards(AuthGuard)
+    async createOrder(@Body() orderDto: createOrderDto , @Request() req) {
+        const user: UserEntity = req.user
+        if(!orderDto.orderItemId){
+            throw new NotFoundException(sendJson(false, "No item found to place order"))
+        }
+        const order = await this.orderService.create(orderDto.orderItemId, orderDto.quantity, user)
+        return sendJson(true, "Order created Successfully", order)
+    }
 
 }

@@ -28,21 +28,23 @@ export class ProductController {
                 categoryIds.split(',').map((id) => +id),
             );
             if (catProducts.length === 0) {
-                throw new NotFoundException('No products found for this category');
+                throw new NotFoundException(sendJson(false, "No product found for this category"));
+                
             }
-            return { success: true, message: 'Filtered products found successfully', data: catProducts };
+            return sendJson(true, "Products found successfully", catProducts)
         }
 
         if (search) {
             const strProducts = await this.productService.searchFilter(search);
             if (strProducts.length === 0) {
-                throw new NotFoundException(`No products found for '${search}'`);
-            }
-            return { success: true, message: 'Products found successfully', data: strProducts };
+                throw new NotFoundException(sendJson(false, `No products found for '${search}'`));
+            } 
+                return sendJson(true, "Products found succssfully!!", strProducts)
+            
         }
 
         const products = await this.productService.allProducts(page);
-        return { success: true, message: 'Products fetched successfully', data: products };
+        return sendJson(true, "Products found successfully", products)
     }
 
 
