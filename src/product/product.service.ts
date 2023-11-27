@@ -110,6 +110,7 @@ export class ProductService {
             product.description = updateDto.description;
             product.price = updateDto.price;
             product.images = updateDto.images;
+            product.category.id = updateDto.categoryId;
         }
         const updatedProduct = await this.productRepo.save(product)
         return updatedProduct
