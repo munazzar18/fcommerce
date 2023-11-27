@@ -8,22 +8,24 @@ import { RegisterUserDto } from 'src/user/registerUser.dto';
 export class AuthController {
     constructor(
         private authService: AuthService
-    ){}
+    ) { }
 
     @UseGuards(AuthGuard('local'))
     @Post('login')
-    async login (@Request() req){
+    async login(@Request() req) {
         const token = await this.authService.login(req.user)
         return sendJson(true, 'User login successfully', {
-            access_token: token.access_token
+            access_token: token.access_token,
+            user: token.user
         })
     }
 
     @Post('register')
-    async register(@Body() data: RegisterUserDto){
+    async register(@Body() data: RegisterUserDto) {
         const token = await this.authService.register(data)
         return sendJson(true, 'User register successfully', {
-            access_token: token.access_token
+            access_token: token.access_token,
+            user: token.user
         })
     }
 

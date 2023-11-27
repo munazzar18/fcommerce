@@ -28,8 +28,8 @@ export class ProductController {
                 categoryIds.split(',').map((id) => +id),
             );
             if (catProducts.length === 0) {
-                throw new NotFoundException(sendJson(false, "No product found for this category"));
-                
+                sendJson(false, "No product found for this category", []);
+
             }
             return sendJson(true, "Products found successfully", catProducts)
         }
@@ -37,10 +37,10 @@ export class ProductController {
         if (search) {
             const strProducts = await this.productService.searchFilter(search);
             if (strProducts.length === 0) {
-                throw new NotFoundException(sendJson(false, `No products found for '${search}'`));
-            } 
-                return sendJson(true, "Products found succssfully!!", strProducts)
-            
+                sendJson(false, `No products found for '${search}'`, []);
+            }
+            return sendJson(true, "Products found succssfully!!", strProducts)
+
         }
 
         const products = await this.productService.allProducts(page);
@@ -76,6 +76,15 @@ export class ProductController {
         } else {
             throw new NotFoundException('No product found')
         }
+    }
+
+    @Get('/userId/:userId')
+    async getUserProducts(@Param('userId', ParseIntPipe) userId: number) {
+        const product = await this.productService.productForAuthUser(userId)
+        if (!product) {
+            throw new NotFoundException(sendJson(false, "No product found"))
+        }
+        return product
     }
 
     @Post()

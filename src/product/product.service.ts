@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './product.entity';
 import { ILike, In, Repository } from 'typeorm';
 import { CreateProductDto, UpdateProductDto } from './productDto.dto';
 import { UserEntity } from 'src/user/user.entity';
+import { sendJson } from 'src/helpers/helpers';
 
 @Injectable()
 export class ProductService {
@@ -21,6 +22,9 @@ export class ProductService {
             take: (page * val),
             relations: { category: true }
         })
+        if (!products) {
+            return null;
+        }
         return products
     }
 
@@ -30,8 +34,11 @@ export class ProductService {
                 categoryId: In(categoryIds)
             }
         })
+        if (!products) {
+            return null
+        }
         return products
-      
+
     }
 
     async searchFilter(search: any) {
@@ -39,8 +46,12 @@ export class ProductService {
             .where(`MATCH(title) AGAINST( '${search}' IN NATURAL LANGUAGE MODE )`)
             .orWhere(`(description) LIKE '%${search}%' `)
             .getMany()
-            return products
-        
+
+        if (!products) {
+            return null
+        }
+        return products
+
         // const products = await this.productRepo.find({
         //     where: [
         //         {title: ILike(`%${search}%`)},
@@ -59,6 +70,20 @@ export class ProductService {
         })
         return product
     }
+
+    async productForAuthUser(authUserId: number) {
+        const product = await this.productRepo.find({
+            where: {
+                userId: authUserId
+            },
+            relations: { category: true }
+        })
+        if (!product) {
+            return null
+        }
+        return product
+    }
+
     async create(createDto: CreateProductDto, authUser: UserEntity) {
         const product = this.productRepo.create({
             ...createDto,
