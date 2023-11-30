@@ -25,7 +25,13 @@ export class ProductService {
         if (!products) {
             return null;
         }
-        return products
+
+        const allProducts = products.map((el) => {
+            const images = el.images.map((img) => "http://localhost:5005" + img)
+            el.images = images
+            return el;
+        })
+        return allProducts
     }
 
     async filterByCategory(categoryIds: number[]) {
@@ -110,6 +116,7 @@ export class ProductService {
             product.description = updateDto.description;
             product.price = updateDto.price;
             product.images = updateDto.images;
+            product.quantity = updateDto.quantity;
             product.category.id = updateDto.categoryId;
         }
         const updatedProduct = await this.productRepo.save(product)

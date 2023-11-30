@@ -117,7 +117,7 @@ export class ProductController {
     @Post('upload')
     @UseInterceptors(FilesInterceptor('files', 10, {
         storage: diskStorage({
-            destination: './uploads/images',
+            destination: './uploads/images/',
             filename: (req, file, callback) => {
                 const orginalName = file.originalname;
                 const extention = extname(orginalName)
@@ -128,11 +128,11 @@ export class ProductController {
     }))
 
     uploadImage(@Body() body: UploadFileDto, @UploadedFiles() files: Express.Multer.File[], @Request() req) {
-        const protocol = req.protocol + "://";
-        const host = req.get("host");
+        // const protocol = req.protocol + "://";
+        // const host = req.get("host");
         // const originUrl = req.originalUrl;
-        const fullUrlPath = protocol + host
-        const fileUrls = files.map((file) => fullUrlPath + '/uploads/images/' + file.filename)
+        // const fullUrlPath = protocol + host
+        const fileUrls = files.map((file) => '/uploads/images/' + file.filename)
         return sendJson(true, 'Images uploaded successfully', fileUrls)
     }
 

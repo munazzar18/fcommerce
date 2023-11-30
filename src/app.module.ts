@@ -13,6 +13,9 @@ import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order_item/order_item.module';
 import { CartModule } from './cart/cart.module';
 import { PaymentDetailModule } from './payment_detail/payment_detail.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 
 @Module({
   imports: [
@@ -26,6 +29,16 @@ import { PaymentDetailModule } from './payment_detail/payment_detail.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    ServeStaticModule.forRoot({
+      serveRoot: '/uploads/images',
+      rootPath: join(__dirname, '..', 'uploads', 'images'),
+      serveStaticOptions: {
+        index: false,
+      },
+    }),
+    MulterModule.register({
+      dest: './uploads/images/',
+    }),
     UserModule,
     AuthModule,
     PassportModule,
@@ -34,9 +47,6 @@ import { PaymentDetailModule } from './payment_detail/payment_detail.module';
     }),
     ProductModule,
     CategoryModule,
-    MulterModule.register({
-      dest: './uploads',
-    }),
     OrderModule,
     OrderItemModule,
     CartModule,
