@@ -43,8 +43,12 @@ export class ProductService {
         if (!products) {
             return null
         }
-        return products
-
+        const allProducts = products.map((el) => {
+            const images = el.images.map((img) => "http://localhost:5005" + img)
+            el.images = images
+            return el;
+        })
+        return allProducts
     }
 
     async searchFilter(search: any) {
@@ -56,7 +60,12 @@ export class ProductService {
         if (!products) {
             return null
         }
-        return products
+        const allProducts = products.map((el) => {
+            const images = el.images.map((img) => "http://localhost:5005" + img)
+            el.images = images
+            return el;
+        })
+        return allProducts
 
         // const products = await this.productRepo.find({
         //     where: [
@@ -74,20 +83,32 @@ export class ProductService {
             },
             relations: { category: true }
         })
-        return product
+        const oneProduct = {
+            ...product,
+            images: product.images.map((img) => "http://localhost:5005" + img)
+        };
+
+        return oneProduct;
+
+
     }
 
     async productForAuthUser(authUserId: number) {
-        const product = await this.productRepo.find({
+        const products = await this.productRepo.find({
             where: {
                 userId: authUserId
             },
             relations: { category: true }
         })
-        if (!product) {
+        if (!products) {
             return null
         }
-        return product
+        const allProducts = products.map((el) => {
+            const images = el.images.map((img) => "http://localhost:5005" + img)
+            el.images = images
+            return el;
+        })
+        return allProducts
     }
 
     async create(createDto: CreateProductDto, authUser: UserEntity) {
@@ -120,7 +141,11 @@ export class ProductService {
             product.category.id = updateDto.categoryId;
         }
         const updatedProduct = await this.productRepo.save(product)
-        return updatedProduct
+        const oneNewProduct = {
+            ...updatedProduct,
+            images: product.images.map((img) => "http://localhost:5005" + img)
+        }
+        return oneNewProduct
 
     }
 
