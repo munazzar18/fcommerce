@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, ParseArrayPipe, ParseIntPipe, Post, Put, Query, Req, Request, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, ParseArrayPipe, ParseIntPipe, Post, Put, Query, Req, Request, Res, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { sendJson } from 'src/helpers/helpers';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -9,7 +9,8 @@ import { Role } from 'src/roles/role.enum';
 import { UserEntity } from 'src/user/user.entity';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
+import { Response } from 'express';
 
 @Controller('product')
 export class ProductController {
@@ -134,6 +135,16 @@ export class ProductController {
         // const fullUrlPath = protocol + host
         const fileUrls = files.map((file) => '/uploads/images/' + file.filename)
         return sendJson(true, 'Images uploaded successfully', fileUrls)
+    }
+
+
+    @Get('uploads/images/:path')
+    async getImages(
+        @Param('path') path: string,
+        @Res() res: Response
+    ) {
+        const imagePath = join(__dirname, '..', 'uploads', 'images', path);
+        return res.sendFile(imagePath)
     }
 
 }

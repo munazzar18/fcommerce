@@ -32,6 +32,7 @@ export class ProductService {
             return el;
         })
         return allProducts
+
     }
 
     async filterByCategory(categoryIds: number[]) {
