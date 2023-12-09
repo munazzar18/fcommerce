@@ -12,9 +12,9 @@ export class PaymentDetailService {
     constructor(
         @InjectRepository(Payment_Detail) private paymentDetail: Repository<Payment_Detail>,
         @InjectRepository(Order) private order: Repository<Order>
-    ){}
+    ) { }
 
-    async get(){
+    async get() {
         const paymentDetail = await this.paymentDetail.find()
         return paymentDetail
     }
@@ -24,14 +24,14 @@ export class PaymentDetailService {
             where: {
                 id: orderId
             },
-            relations: {payment_detail: true}
+            relations: { payment_detail: true }
         })
-        if(!order){
+        if (!order) {
             throw new NotFoundException(sendJson(false, "Order not found"))
         }
-
-        if(order.payment_detail){
-            if(order.total === payment){
+        console.log("payment:", payment)
+        if (order.payment_detail) {
+            if (order.total === payment) {
                 order.payment_detail.payment = payment
                 order.payment_detail.status = Status.Paid
                 await this.paymentDetail.save(order.payment_detail)
@@ -40,8 +40,8 @@ export class PaymentDetailService {
             }
         }
         order.total = payment
-        
+
         return order.payment_detail
-        
+
     }
 }

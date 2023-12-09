@@ -20,52 +20,63 @@ export class CartService {
         return this.cartRepo.findOneBy({ id })
     }
 
+    async findUserCart(userId: number) {
+        return this.cartRepo.findOne({
+            where: {
+                user: {
+                    id: userId
+                }
+            },
+            relations: ['products'],
+        })
+    }
 
     async create(productId: number, authUser: UserEntity) {
         const selectedProduct = await this.productRepo.findOne({
-            where: {
-                id: productId,
-                userId: authUser.id
-            }
-        })
+            where: { id: productId }
+        });
+
         if (!selectedProduct) {
-            throw new NotFoundException('No product to add in cart!')
+            throw new NotFoundException('No product to add in cart!');
         }
-        else {
-            const productInCart = await this.cartRepo.findOne({
-                where: {
-                    product: {
-                        id: selectedProduct.id
-                    },
-                    user: {
-                        id: authUser.id
-                    }
+
+        // Check if the user has an existing cart
+        let cart = await this.cartRepo.findOne({
+            where: {
+                user: {
+                    id: authUser.id
                 }
-            })
-            if (productInCart) {
-                if (selectedProduct.quantity > 0) {
-                    productInCart.quantity += 1;
-                    return await this.cartRepo.save(productInCart);
-                } else {
-                    throw new NotFoundException("This product is out of stock!");
-                }
+            },
+            relations: ['products']
+        });
+
+        if (!cart) {
+            // If the user doesn't have a cart, create a new one
+            cart = new Cart();
+            cart.products = [selectedProduct];
+            cart.quantity = 1;
+            cart.total = 1;
+            cart.user = authUser;
+        } else {
+            // If the user has a cart
+            const existingProduct = cart.products.find((product) => product.id === selectedProduct.id);
+
+            if (existingProduct) {
+                // If the product is already in the cart, update quantity and total
+                existingProduct.quantity += 1;
+                cart.total += 1;
             } else {
-                if (selectedProduct.quantity > 0) {
-                    const cartEntry = this.cartRepo.create({
-                        product: selectedProduct,
-                        quantity: 1,
-                        user: authUser
-                    });
-                    await this.cartRepo.save(cartEntry);
-                    return cartEntry;
-                } else {
-                    throw new NotFoundException("This product is out of stock!");
-                }
+                // If the product is not in the cart, add it with quantity 1 and update total
+                cart.products.push(selectedProduct);
+                cart.quantity += 1;
+                cart.total += 1;
             }
-
         }
 
-
+        await this.cartRepo.save(cart); // Save/update the cart
+        return cart;
     }
 
 }
+
+

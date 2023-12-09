@@ -23,6 +23,12 @@ export class CartController {
         return sendJson(true, "cart found successfully", cart)
     }
 
+    @Get('/userCart/:userId')
+    async getUserCart(@Param('userId', ParseIntPipe) userId: number) {
+        const cart = await this.cartService.findUserCart(userId)
+        return sendJson(true, "User Cart found successfully", cart)
+    }
+
     @Post()
     @UseGuards(AuthGuard)
     async createcart(@Body() createCart: CreateCartDto, @Request() req) {

@@ -11,36 +11,36 @@ export class UserEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({nullable: false})
+    @Column({ nullable: false })
     email: string;
 
-    @Column({nullable: false})
+    @Column({ nullable: false })
     firstName: string;
 
-    @Column({nullable: false})
+    @Column({ nullable: false })
     lastName: string;
 
-    @Column({nullable: false})
+    @Column({ nullable: false })
     mobile: string;
 
-    @Column({nullable: false})
+    @Column({ nullable: false })
     address: string;
 
-    @Column({nullable: false})
+    @Column({ nullable: false })
     password: string;
 
-    @Column({type: 'enum', enum: Role, default: Role.User})
+    @Column({ type: 'enum', enum: Role, default: Role.User })
     roles: Role
 
-    @OneToOne(() => Cart)
-    @JoinColumn()
+    @OneToOne(() => Cart, (cart) => cart.user)
+    @JoinColumn({ name: "cartId" })
     cart: Cart;
 
     @OneToMany(() => Product, (product) => product.user)
-    @JoinColumn({name: 'product'})
+    @JoinColumn({ name: 'product' })
     product: Product[]
 
-    @OneToMany(()=> Order, (order) => order.user)
+    @OneToMany(() => Order, (order) => order.user)
     orders: Order[]
 }
 

@@ -43,8 +43,9 @@ export class Product {
     @OneToMany(() => Order_Item, (orderItems) => orderItems.product)
     orderItems: Order_Item[]
 
-    @OneToMany(() => Cart, (cart) => cart.product)
-    cart: Cart[];
+
+    @ManyToOne(() => Cart, (cart) => cart.products)
+    cart: Cart
 
     @ManyToOne(() => UserEntity, (user) => user.product)
     @JoinColumn({ name: 'userId' })
