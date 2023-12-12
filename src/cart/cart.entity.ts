@@ -20,12 +20,13 @@ export class Cart {
     @UpdateDateColumn()
     updated_at: Date;
 
+    @OneToMany(() => Product, (product) => product.cart)
+    @JoinColumn({ name: "productIds" })
+    products: Product[];
+
     @OneToOne(() => UserEntity, (user) => user.cart)
     @JoinColumn({ name: "userId" })
     user: UserEntity
 
-    @OneToMany(() => Product, (product) => product.cart)
-    @JoinColumn({ name: "ProductIds" })
-    products: Product[];
 
 }

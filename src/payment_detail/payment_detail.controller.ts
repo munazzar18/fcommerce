@@ -17,8 +17,6 @@ export class PaymentDetailController {
     @UseGuards(AuthGuard)
     async createPayment(@Body() paymentDto: Payment_Detail_Dto, @Request() req) {
         const authUser: UserEntity = req.user
-        console.log("BODY:", paymentDto)
-        console.log("PAYEMENT IN CONTROLLER:", paymentDto.payment)
         const payment = await this.payment_Detail_Service.create(paymentDto.orderId, paymentDto.payment, authUser)
         return sendJson(true, "Payment Successfull, Order completed", payment)
     }

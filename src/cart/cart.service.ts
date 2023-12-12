@@ -40,15 +40,17 @@ export class CartService {
             throw new NotFoundException('No product to add in cart!');
         }
 
+
         // Check if the user has an existing cart
         let cart = await this.cartRepo.findOne({
             where: {
                 user: {
                     id: authUser.id
-                }
+                },
             },
             relations: ['products']
         });
+
 
         if (!cart) {
             // If the user doesn't have a cart, create a new one
