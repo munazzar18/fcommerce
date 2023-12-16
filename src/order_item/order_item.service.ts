@@ -21,11 +21,10 @@ export class OrderItemService {
         return this.orderItemRepo.findOneBy({ id })
     }
 
-    async create(productId: number,  quantity: number, authUser: UserEntity,) {
+    async create(productId: number, quantity: number,) {
         const selectedProduct = await this.prodRepo.findOne({
             where: {
                 id: productId,
-                userId: authUser.id
             }
         });
 
@@ -40,9 +39,9 @@ export class OrderItemService {
         const orderItem = new Order_Item();
         orderItem.product = selectedProduct;
         orderItem.quantity = quantity;
-       
+
         selectedProduct.quantity -= quantity;
-       
+
         await this.prodRepo.save(selectedProduct);
         await this.orderItemRepo.save(orderItem);
 

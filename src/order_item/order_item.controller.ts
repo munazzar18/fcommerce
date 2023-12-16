@@ -9,10 +9,10 @@ import { UserEntity } from 'src/user/user.entity';
 export class OrderItemController {
     constructor(
         private orderItemService: OrderItemService
-    ){}
+    ) { }
 
     @Get()
-    async getOrderItem(){
+    async getOrderItem() {
         const orderItems = await this.orderItemService.getAll()
         return sendJson(true, "Order Items", orderItems)
     }
@@ -20,9 +20,9 @@ export class OrderItemController {
     @Get('/:id')
     async getOrderItemById(
         @Param('id', ParseIntPipe) id: number
-    ){
+    ) {
         const orderItem = await this.orderItemService.getById(id)
-        if(orderItem){
+        if (orderItem) {
 
             return sendJson(true, "Order Item", orderItem)
         } else {
@@ -32,9 +32,8 @@ export class OrderItemController {
 
     @UseGuards(AuthGuard)
     @Post()
-    async createOrderItem(@Body() orderItemDto: OrderItemDto, @Request() req){
-        const userId : UserEntity = req.user
-        const orderItem = await this.orderItemService.create(orderItemDto.productId, orderItemDto.quantity, userId)
+    async createOrderItem(@Body() orderItemDto: OrderItemDto) {
+        const orderItem = await this.orderItemService.create(orderItemDto.productId, orderItemDto.quantity)
         return sendJson(true, "Order Item created successfully", orderItem)
     }
 }
