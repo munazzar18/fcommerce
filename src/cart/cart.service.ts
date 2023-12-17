@@ -43,8 +43,13 @@ export class CartService {
         }
 
         const productInCart = await this.cartRepo.find()
-        const grandTotal = productInCart.map((el) => el.quantity)
-        const calculatedTotal = grandTotal.reduce((el, cl) => el + cl)
+        let grandTotal = []
+        let calculatedTotal = 0
+        if(productInCart.length > 0){
+             grandTotal = productInCart.map((el) => el.quantity)
+             calculatedTotal = grandTotal ? grandTotal.reduce((el, cl) => el + cl) : 0
+            
+        }
 
         const existingProduct = await this.cartRepo.findOne({
             where: {
