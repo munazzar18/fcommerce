@@ -11,6 +11,9 @@ export class Order_Item {
     @Column()
     quantity: number
 
+    @Column()
+    totalPrice: number
+
     @CreateDateColumn()
     created_at: Date;
 

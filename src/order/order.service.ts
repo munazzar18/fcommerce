@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './order.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Order_Item } from 'src/order_item/order_item.entity';
 import { Product } from 'src/product/product.entity';
 import { Payment_Detail } from 'src/payment_detail/payment_detail.entity';
@@ -38,6 +38,11 @@ export class OrderService {
         if (!orderItem) {
             throw new NotFoundException(sendJson(false, "No item find to place order"))
         }
+
+        if (orderItem?.product?.quantity === 0) {
+            throw new NotFoundException(sendJson(false, "Item out of stock"))
+        }
+
         const totalPrice = orderItem.product.price * quantity
 
         const paymentDetail = new Payment_Detail()
@@ -45,7 +50,6 @@ export class OrderService {
         paymentDetail.status = Status.Pending
         paymentDetail.provider = "JazzCash"
         paymentDetail.payment = 0
-
         const savedPaymentDetail = await this.paymentRepo.save(paymentDetail)
 
         const order = new Order()
@@ -53,6 +57,8 @@ export class OrderService {
         order.payment_detail = savedPaymentDetail
         order.total = totalPrice
         order.user = authUser
+        orderItem.product.quantity -= quantity
+        await this.productRepo.save(orderItem.product)
         const savedOrder = await this.orderRepo.save(order)
         return savedOrder
     }

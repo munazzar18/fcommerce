@@ -14,11 +14,21 @@ export class OrderItemService {
 
 
     async getAll() {
-        return this.orderItemRepo.find()
+        const ordetItems = this.orderItemRepo.find({
+            relations: ['product']
+        })
+        return ordetItems
     }
 
+
     async getById(id: number) {
-        return this.orderItemRepo.findOneBy({ id })
+        const orderItem = this.orderItemRepo.findOne({
+            where: {
+                id: id
+            },
+            relations: ['product']
+        })
+        return orderItem
     }
 
     async getByUserId(userId: number) {
@@ -44,10 +54,6 @@ export class OrderItemService {
             throw new NotFoundException('No product found for this id');
         }
 
-        if (selectedProduct.quantity <= 0 || selectedProduct.quantity < quantity) {
-            throw new BadRequestException('Product is out of stock or quantity exceeded!');
-        }
-
         const exisistingItem = await this.orderItemRepo.findOne({
             where: {
                 product: {
@@ -57,12 +63,10 @@ export class OrderItemService {
         })
 
         if (exisistingItem) {
-            console.log("ORDER:", exisistingItem)
             exisistingItem.user = authUser;
             exisistingItem.product = selectedProduct;
+            exisistingItem.totalPrice = exisistingItem.totalPrice = (exisistingItem.quantity + quantity) * selectedProduct.price
             exisistingItem.quantity += quantity;
-            selectedProduct.quantity -= quantity
-            await this.prodRepo.save(selectedProduct)
             await this.orderItemRepo.save(exisistingItem)
             return exisistingItem
         }
@@ -71,11 +75,7 @@ export class OrderItemService {
             orderItem.user = authUser;
             orderItem.product = selectedProduct;
             orderItem.quantity = quantity;
-            selectedProduct.quantity -= quantity;
-
-            console.log("NEW ORDER:", orderItem)
-
-            await this.prodRepo.save(selectedProduct);
+            orderItem.totalPrice = selectedProduct.price * quantity
             await this.orderItemRepo.save(orderItem);
 
             return orderItem;

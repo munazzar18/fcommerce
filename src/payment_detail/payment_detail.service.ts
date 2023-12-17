@@ -29,7 +29,6 @@ export class PaymentDetailService {
         if (!order) {
             throw new NotFoundException(sendJson(false, "Order not found"))
         }
-        console.log("payment:", payment)
         if (order.payment_detail) {
             if (order.total === payment) {
                 order.payment_detail.payment = payment
