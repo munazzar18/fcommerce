@@ -22,14 +22,15 @@ export class CartService {
     }
 
     async findUserCart(userId: number) {
-        return this.cartRepo.findOne({
+        const cart = await this.cartRepo.find({
             where: {
                 user: {
                     id: userId
                 }
             },
-            relations: ['products'],
+            relations: ['product']
         })
+        return cart
     }
 
     async create(productId: number, authUser: UserEntity) {
@@ -56,7 +57,7 @@ export class CartService {
             existingProduct.user = authUser;
             existingProduct.product = selectedProduct
             existingProduct.quantity += 1;
-            existingProduct.total += 1;
+            existingProduct.total = calculatedTotal ? calculatedTotal + 1 : + 1;
             await this.cartRepo.save(existingProduct)
             return existingProduct
         }
