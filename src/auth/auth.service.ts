@@ -20,11 +20,11 @@ export class AuthService {
                 return new serializedUser(userDb)
             }
             else {
-                throw new UnauthorizedException('Invalid Password')
+                throw new UnauthorizedException('Invalid Credentials')
             }
         }
         else {
-            throw new UnauthorizedException('Invalid Email')
+            throw new UnauthorizedException('Invalid Credentials')
         }
     }
 

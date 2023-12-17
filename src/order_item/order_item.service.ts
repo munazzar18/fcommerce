@@ -21,7 +21,19 @@ export class OrderItemService {
         return this.orderItemRepo.findOneBy({ id })
     }
 
-    async create(productId: number, quantity: number,) {
+    async getByUserId(userId: number) {
+        const orderItem = await this.orderItemRepo.find({
+            where: {
+                user: {
+                    id: userId
+                }
+            },
+            relations: ['product']
+        })
+        return orderItem
+    }
+
+    async create(productId: number, quantity: number, authUser: UserEntity) {
         const selectedProduct = await this.prodRepo.findOne({
             where: {
                 id: productId,
@@ -36,16 +48,40 @@ export class OrderItemService {
             throw new BadRequestException('Product is out of stock or quantity exceeded!');
         }
 
-        const orderItem = new Order_Item();
-        orderItem.product = selectedProduct;
-        orderItem.quantity = quantity;
+        const exisistingItem = await this.orderItemRepo.findOne({
+            where: {
+                product: {
+                    id: selectedProduct.id
+                }
+            }
+        })
 
-        selectedProduct.quantity -= quantity;
+        if (exisistingItem) {
+            console.log("ORDER:", exisistingItem)
+            exisistingItem.user = authUser;
+            exisistingItem.product = selectedProduct;
+            exisistingItem.quantity += quantity;
+            selectedProduct.quantity -= quantity
+            await this.prodRepo.save(selectedProduct)
+            await this.orderItemRepo.save(exisistingItem)
+            return exisistingItem
+        }
+        else {
+            const orderItem = new Order_Item();
+            orderItem.user = authUser;
+            orderItem.product = selectedProduct;
+            orderItem.quantity = quantity;
+            selectedProduct.quantity -= quantity;
 
-        await this.prodRepo.save(selectedProduct);
-        await this.orderItemRepo.save(orderItem);
+            console.log("NEW ORDER:", orderItem)
 
-        return orderItem;
+            await this.prodRepo.save(selectedProduct);
+            await this.orderItemRepo.save(orderItem);
+
+            return orderItem;
+        }
+
+
     }
 }
 

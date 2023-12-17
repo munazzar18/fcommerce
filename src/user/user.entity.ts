@@ -1,6 +1,7 @@
 import { Exclude } from "class-transformer";
 import { Cart } from "src/cart/cart.entity";
 import { Order } from "src/order/order.entity";
+import { Order_Item } from "src/order_item/order_item.entity";
 import { Product } from "src/product/product.entity";
 import { Role } from "src/roles/role.enum";
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -32,9 +33,11 @@ export class UserEntity {
     @Column({ type: 'enum', enum: Role, default: Role.User })
     roles: Role
 
-    @OneToOne(() => Cart, (cart) => cart.user)
-    @JoinColumn({ name: "cartId" })
-    cart: Cart;
+    @OneToMany(() => Cart, (cart) => cart.user)
+    cart: Cart[];
+
+    @OneToMany(() => Order_Item, (orderItem) => orderItem.user)
+    orderItem: Order_Item
 
     @OneToMany(() => Product, (product) => product.user)
     @JoinColumn({ name: 'product' })

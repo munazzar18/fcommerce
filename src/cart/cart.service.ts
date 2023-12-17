@@ -4,6 +4,7 @@ import { Cart } from './cart.entity';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/user/user.entity';
 import { Product } from 'src/product/product.entity';
+import e from 'express';
 
 @Injectable()
 export class CartService {
@@ -40,43 +41,38 @@ export class CartService {
             throw new NotFoundException('No product to add in cart!');
         }
 
-        let cart = await this.cartRepo.findOne({
+        const productInCart = await this.cartRepo.find()
+        console.log("PRODUCTS:", productInCart)
+        const grandTotal = productInCart.map((el) => el.quantity)
+        const calculatedTotal = grandTotal.reduce((el, cl) => el + cl)
+        console.log("GRAND:", grandTotal)
+        console.log("CAL:", calculatedTotal)
+
+        const existingProduct = await this.cartRepo.findOne({
             where: {
-                user: {
-                    id: authUser.id
-                },
-            },
-            relations: ['products']
-        });
-
-
-        if (!cart) {
-
-            cart = new Cart();
-            cart.products = [selectedProduct];
-            cart.quantity = 1;
-            cart.total = 1;
-            cart.user = authUser;
-        } else {
-
-            const existingProduct = cart.products.find((product) => product.id === selectedProduct.id);
-
-            if (existingProduct) {
-
-                existingProduct.quantity += 1;
-                cart.total += 1;
-            } else {
-
-                cart.products.push(selectedProduct);
-                cart.quantity += 1;
-                cart.total += 1;
+                product: {
+                    id: productId
+                }
             }
+        })
+        if (existingProduct) {
+            existingProduct.user = authUser;
+            existingProduct.product = selectedProduct
+            existingProduct.quantity += 1;
+            existingProduct.total += 1;
+            await this.cartRepo.save(existingProduct)
+            return existingProduct
         }
-
-        await this.cartRepo.save(cart); // Save/update the cart
-        return cart;
+        else {
+            const cart = new Cart()
+            cart.user = authUser
+            cart.product = selectedProduct
+            cart.quantity = 1;
+            cart.total = calculatedTotal ? calculatedTotal + 1 : 1;
+            await this.cartRepo.save(cart)
+            return cart
+        }
     }
-
 }
 
 

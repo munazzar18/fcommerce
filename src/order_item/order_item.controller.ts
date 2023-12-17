@@ -30,10 +30,21 @@ export class OrderItemController {
         }
     }
 
+    @Get('userId/:userId')
+    async getByUserId(@Param('userId', ParseIntPipe) userId: number) {
+        const orderItem = await this.orderItemService.getByUserId(userId)
+        if (orderItem) {
+            return sendJson(true, "Order Item found successfully", orderItem)
+        } else {
+            return sendJson(false, "No items found")
+        }
+    }
+
     @UseGuards(AuthGuard)
     @Post()
-    async createOrderItem(@Body() orderItemDto: OrderItemDto) {
-        const orderItem = await this.orderItemService.create(orderItemDto.productId, orderItemDto.quantity)
+    async createOrderItem(@Body() orderItemDto: OrderItemDto, @Request() req) {
+        const user: UserEntity = req.user
+        const orderItem = await this.orderItemService.create(orderItemDto.productId, orderItemDto.quantity, user)
         return sendJson(true, "Order Item created successfully", orderItem)
     }
 }
