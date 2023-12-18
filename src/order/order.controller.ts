@@ -25,12 +25,12 @@ export class OrderController {
 
     @Post()
     @UseGuards(AuthGuard)
-    async createOrder(@Body() orderDto: createOrderDto , @Request() req) {
+    async createOrder(@Body() orderDto: createOrderDto, @Request() req) {
         const user: UserEntity = req.user
-        if(!orderDto.orderItemId){
+        if (!orderDto.orderItemIds) {
             throw new NotFoundException(sendJson(false, "No item found to place order"))
         }
-        const order = await this.orderService.create(orderDto.orderItemId, orderDto.quantity, user)
+        const order = await this.orderService.create(orderDto.orderItemIds, orderDto.quantities, user)
         return sendJson(true, "Order created Successfully", order)
     }
 

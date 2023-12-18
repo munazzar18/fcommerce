@@ -80,8 +80,41 @@ export class OrderItemService {
 
             return orderItem;
         }
+    }
+    async deleteItem(productId: number, quantity: number, authUser: UserEntity) {
+        const selectedProduct = await this.prodRepo.findOne({
+            where: {
+                id: productId,
+            }
+        });
 
+        if (!selectedProduct) {
+            throw new NotFoundException('No product found for this id');
+        }
 
+        const exisistingItem = await this.orderItemRepo.findOne({
+            where: {
+                product: {
+                    id: selectedProduct.id
+                }
+            }
+        });
+
+        if (exisistingItem.quantity > 0) {
+            const remainingQuantity = exisistingItem.quantity - quantity;
+
+            if (remainingQuantity > 0) {
+                exisistingItem.quantity = remainingQuantity;
+                exisistingItem.totalPrice = remainingQuantity * selectedProduct.price;
+                await this.orderItemRepo.save(exisistingItem);
+                return exisistingItem;
+            } else {
+                await this.orderItemRepo.delete(exisistingItem.id);
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 }
 

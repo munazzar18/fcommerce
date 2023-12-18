@@ -3,8 +3,8 @@ import { IsNotEmpty } from "class-validator";
 export class createOrderDto {
 
     @IsNotEmpty()
-    orderItemId: number
+    orderItemIds: number[]
 
     @IsNotEmpty()
-    quantity: number
+    quantities: number[]
 }

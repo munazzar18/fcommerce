@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './order.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Order_Item } from 'src/order_item/order_item.entity';
 import { Product } from 'src/product/product.entity';
 import { Payment_Detail } from 'src/payment_detail/payment_detail.entity';
@@ -27,39 +27,93 @@ export class OrderService {
         return this.orderRepo.findOneBy({ id })
     }
 
-    async create(orderItemId: number, quantity: number, authUser: UserEntity,) {
+    // async create(orderItemId: number, quantity: number, authUser: UserEntity,) {
 
-        const orderItem = await this.order_item_repo.findOne({
+    //     const orderItem = await this.order_item_repo.findOne({
+    //         where: {
+    //             id: orderItemId
+    //         },
+    //         relations: ['product']
+    //     })
+    //     if (!orderItem) {
+    //         throw new NotFoundException(sendJson(false, "No item find to place order"))
+    //     }
+
+    //     if (orderItem?.product?.quantity === 0) {
+    //         throw new NotFoundException(sendJson(false, "Item out of stock"))
+    //     }
+
+    //     const totalPrice = orderItem.product.price * quantity
+
+    //     const paymentDetail = new Payment_Detail()
+    //     paymentDetail.amount = totalPrice
+    //     paymentDetail.status = Status.Pending
+    //     paymentDetail.provider = "JazzCash"
+    //     paymentDetail.payment = 0
+    //     const savedPaymentDetail = await this.paymentRepo.save(paymentDetail)
+
+    //     const order = new Order()
+    //     order.orderItems = [orderItem]
+    //     order.payment_detail = savedPaymentDetail
+    //     order.total = totalPrice
+    //     order.user = authUser
+    //     orderItem.product.quantity -= quantity
+    //     await this.productRepo.save(orderItem.product)
+    //     const savedOrder = await this.orderRepo.save(order)
+    //     return savedOrder
+    // }
+
+    async create(orderItemIds: number[], quantities: number[], authUser: UserEntity) {
+        if (orderItemIds.length !== quantities.length || orderItemIds.length === 0) {
+            throw new BadRequestException('Invalid order items or quantities provided');
+        }
+
+        const orderItems = await this.order_item_repo.find({
             where: {
-                id: orderItemId
+                id: In(orderItemIds),
             },
-            relations: ['product']
-        })
-        if (!orderItem) {
-            throw new NotFoundException(sendJson(false, "No item find to place order"))
+            relations: ['product'],
+        });
+
+        if (!orderItems || orderItems.length === 0) {
+            throw new NotFoundException(sendJson(false, "No items found to place order"));
         }
 
-        if (orderItem?.product?.quantity === 0) {
-            throw new NotFoundException(sendJson(false, "Item out of stock"))
+        const totalPrice = orderItems.reduce((total, item, index) => {
+            const itemQuantity = quantities[index] > 0 ? quantities[index] : 1;
+            return total + (item.product.price * itemQuantity);
+        }, 0);
+
+        const outOfStockItems = orderItems.filter((item, index) => item.product.quantity < quantities[index]);
+        if (outOfStockItems.length > 0) {
+            throw new NotFoundException(sendJson(false, "One or more items are out of stock"));
         }
 
-        const totalPrice = orderItem.product.price * quantity
+        const paymentDetail = new Payment_Detail();
+        paymentDetail.amount = totalPrice;
+        paymentDetail.status = Status.Pending;
+        paymentDetail.provider = "JazzCash";
+        paymentDetail.payment = 0;
+        const savedPaymentDetail = await this.paymentRepo.save(paymentDetail);
 
-        const paymentDetail = new Payment_Detail()
-        paymentDetail.amount = totalPrice
-        paymentDetail.status = Status.Pending
-        paymentDetail.provider = "JazzCash"
-        paymentDetail.payment = 0
-        const savedPaymentDetail = await this.paymentRepo.save(paymentDetail)
+        const order = new Order();
+        order.orderItems = orderItems.map((item, index) => {
+            const newItem = { ...item };
+            newItem.quantity = quantities[index] > 0 ? quantities[index] : 1;
+            item.product.quantity -= newItem.quantity;
+            return newItem;
+        });
+        order.payment_detail = savedPaymentDetail;
+        order.total = totalPrice;
+        order.user = authUser;
 
-        const order = new Order()
-        order.orderItems = [orderItem]
-        order.payment_detail = savedPaymentDetail
-        order.total = totalPrice
-        order.user = authUser
-        orderItem.product.quantity -= quantity
-        await this.productRepo.save(orderItem.product)
-        const savedOrder = await this.orderRepo.save(order)
-        return savedOrder
+        // Saving the updated product quantities
+        for (const item of order.orderItems) {
+            await this.productRepo.save(item.product);
+        }
+
+        const savedOrder = await this.orderRepo.save(order);
+        return savedOrder;
     }
+
 }

@@ -45,6 +45,15 @@ export class OrderItemController {
     async createOrderItem(@Body() orderItemDto: OrderItemDto, @Request() req) {
         const user: UserEntity = req.user
         const orderItem = await this.orderItemService.create(orderItemDto.productId, orderItemDto.quantity, user)
-        return sendJson(true, "Order Item created successfully", orderItem)
+        return sendJson(true, "Item added successfully", orderItem)
+    }
+
+
+    @UseGuards(AuthGuard)
+    @Post('delete')
+    async deleteOrderItem(@Body() orderItemDto: OrderItemDto, @Request() req) {
+        const user: UserEntity = req.user
+        const orderItem = await this.orderItemService.deleteItem(orderItemDto.productId, orderItemDto.quantity, user)
+        return sendJson(true, "Item removed successfully", orderItem)
     }
 }
