@@ -16,6 +16,7 @@ import { PaymentDetailModule } from './payment_detail/payment_detail.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
+import { StripeModule } from 'nestjs-stripe';
 
 
 @Module({
@@ -47,6 +48,9 @@ import { join } from 'path';
           pass: 'khantareen1827'
         }
       }
+    }),
+    StripeModule.forRoot({
+      apiKey: 'pk_test_51OOw7ZFPZ76tReEZml5Eox8p6sXIrJ8eDMXZx8pe47dtp1rb4Rx5fwinbgEvWKT01tFIIrOBrGiEuFrf1S4IYVFK00ZHVHKvIw',
     }),
     MulterModule.register({
       dest: './uploads/images/',

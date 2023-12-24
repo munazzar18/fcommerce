@@ -11,7 +11,7 @@ import { Status } from './payment_status.enum';
 export class PaymentDetailService {
     constructor(
         @InjectRepository(Payment_Detail) private paymentDetail: Repository<Payment_Detail>,
-        @InjectRepository(Order) private order: Repository<Order>
+        @InjectRepository(Order) private order: Repository<Order>,
     ) { }
 
     async get() {
