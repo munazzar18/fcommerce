@@ -44,13 +44,13 @@ import { StripeModule } from 'nestjs-stripe';
         port: 587,
         secure: false,
         auth: {
-          user: 'gex.18@hotmail.com',
-          pass: 'khantareen1827'
+          user: 'myemail@mail.com',
+          pass: 'password123'
         }
       }
     }),
     StripeModule.forRoot({
-      apiKey: 'pk_test_51OOw7ZFPZ76tReEZml5Eox8p6sXIrJ8eDMXZx8pe47dtp1rb4Rx5fwinbgEvWKT01tFIIrOBrGiEuFrf1S4IYVFK00ZHVHKvIw',
+      apiKey: '',
     }),
     MulterModule.register({
       dest: './uploads/images/',
