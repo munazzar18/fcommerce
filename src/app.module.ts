@@ -14,6 +14,7 @@ import { OrderItemModule } from './order_item/order_item.module';
 import { CartModule } from './cart/cart.module';
 import { PaymentDetailModule } from './payment_detail/payment_detail.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 
 
@@ -35,6 +36,17 @@ import { join } from 'path';
       serveStaticOptions: {
         index: false,
       },
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.office365.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: 'gex.18@hotmail.com',
+          pass: 'khantareen1827'
+        }
+      }
     }),
     MulterModule.register({
       dest: './uploads/images/',

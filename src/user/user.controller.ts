@@ -47,4 +47,9 @@ export class UserController {
             throw new NotFoundException('user not found for this email')
         }
     }
+
+    @Get('/sendMail')
+    async sendMail() {
+        return await this.userService.sendMail();
+    }
 }
