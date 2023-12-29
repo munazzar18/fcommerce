@@ -49,9 +49,9 @@ import { StripeModule } from 'nestjs-stripe';
         }
       }
     }),
-    StripeModule.forRoot({
-      apiKey: '',
-    }),
+    // StripeModule.forRoot({
+    //   apiKey: '',
+    // }),
     MulterModule.register({
       dest: './uploads/images/',
     }),

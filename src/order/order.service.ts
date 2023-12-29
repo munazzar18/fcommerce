@@ -27,6 +27,23 @@ export class OrderService {
         return this.orderRepo.findOneBy({ id })
     }
 
+    async userOrder(userId: number) {
+        const userOrder = await this.orderRepo.find({
+            where: {
+                user: {
+                    id: userId
+                },
+            },
+            relations: ['payment_detail', 'orderItems', 'orderItems.product'],
+        });
+
+        if (!userOrder || userOrder.length === 0) {
+            throw new NotFoundException('No Orders');
+        }
+        return userOrder
+    }
+
+
     // async create(orderItemId: number, quantity: number, authUser: UserEntity,) {
 
     //     const orderItem = await this.order_item_repo.findOne({

@@ -23,6 +23,12 @@ export class OrderController {
         return sendJson(true, "Order fetched Successfully", order)
     }
 
+    @Get('/userId/:userId')
+    async userOrder(@Param('userId', ParseIntPipe) userId: number) {
+        const userOrder = await this.orderService.userOrder(userId)
+        return sendJson(true, "Order found successfully", userOrder)
+    }
+
     @Post()
     @UseGuards(AuthGuard)
     async createOrder(@Body() orderDto: createOrderDto, @Request() req) {
