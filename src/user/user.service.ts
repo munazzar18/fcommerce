@@ -31,7 +31,7 @@ export class UserService {
 
      async sendMail() {
           await this.mailerService.sendMail({
-               to: 'gex.18@hotmail.com', // List of receivers email address
+               to: "", // List of receivers email address
                from: 'fcommerce@outlook.com', // Senders email address
                subject: 'Testing Nest MailerModule ✔', // Subject line
                text: 'welcome', // plaintext body
@@ -41,7 +41,7 @@ export class UserService {
                     console.log("Success:", success)
                })
                .catch((err) => {
-                    console.log("ERROROOOOr:", err)
+                    console.log("ERROR AYA HA:", err)
                });
           // await this.mailerService.sendMail({
           //      to: 'gex.18@hotmail.com',

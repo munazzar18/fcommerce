@@ -15,6 +15,7 @@ import { CartModule } from './cart/cart.module';
 import { PaymentDetailModule } from './payment_detail/payment_detail.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import { StripeModule } from 'nestjs-stripe';
 
@@ -38,14 +39,16 @@ import { StripeModule } from 'nestjs-stripe';
         index: false,
       },
     }),
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+    }),
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.office365.com',
-        port: 587,
-        secure: false,
+        host: "sandbox.smtp.mailtrap.io",
+        port: 2525,
         auth: {
-          user: 'myemail@mail.com',
-          pass: 'password123'
+          user: process.env.MAIL_USERNAME,
+          pass: process.env.MAIL_PASS
         }
       }
     }),

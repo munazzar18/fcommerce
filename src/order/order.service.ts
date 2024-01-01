@@ -28,7 +28,7 @@ export class OrderService {
     }
 
     async userOrder(userId: number) {
-        const userOrder = await this.orderRepo.find({
+        const userOrder = await this.orderRepo.findOne({
             where: {
                 user: {
                     id: userId
@@ -37,7 +37,7 @@ export class OrderService {
             relations: ['payment_detail', 'orderItems', 'orderItems.product'],
         });
 
-        if (!userOrder || userOrder.length === 0) {
+        if (!userOrder) {
             throw new NotFoundException('No Orders');
         }
         return userOrder
