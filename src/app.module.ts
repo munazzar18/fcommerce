@@ -52,9 +52,9 @@ import { StripeModule } from 'nestjs-stripe';
         }
       }
     }),
-    // StripeModule.forRoot({
-    //   apiKey: '',
-    // }),
+    StripeModule.forRoot({
+      apiKey: process.env.SECRET_KEY,
+    }),
     MulterModule.register({
       dest: './uploads/images/',
     }),

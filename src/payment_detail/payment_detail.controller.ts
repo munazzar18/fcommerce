@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
 import { PaymentDetailService } from './payment_detail.service';
 import { Payment_Detail_Dto } from './payment_detail.dto';
 import { sendJson } from 'src/helpers/helpers';
@@ -11,6 +11,11 @@ export class PaymentDetailController {
         private payment_Detail_Service: PaymentDetailService
     ) { }
 
+    @Get('session/:orderId')
+    async getStripSession(@Param('orderId', ParseIntPipe) orderId: number) {
+        const session = await this.payment_Detail_Service.checkoutSession(orderId)
+        return sendJson(true, "Session Successfull", session)
+    }
 
 
     @Post()
