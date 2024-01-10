@@ -48,8 +48,4 @@ export class UserController {
         }
     }
 
-    @Get('/sendMail')
-    async sendMail() {
-        return await this.userService.sendMail();
-    }
 }

@@ -54,6 +54,7 @@ export class AuthService {
         else {
             const password = encodedPass(data.password)
             const newUser = await this.userService.create({ ...data, password })
+            await this.userService.sendMail(data.email)
             const payload = {
                 email: newUser.email,
                 id: newUser.id,

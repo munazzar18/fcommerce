@@ -27,11 +27,12 @@ export class UserService {
 
      async create(data: RegisterUserDto) {
           return await this.userRepo.save(data)
+
      }
 
-     async sendMail() {
+     async sendMail(email: string) {
           await this.mailerService.sendMail({
-               to: "", // List of receivers email address
+               to: email, // List of receivers email address
                from: 'fcommerce@outlook.com', // Senders email address
                subject: 'Testing Nest MailerModule ✔', // Subject line
                text: 'welcome', // plaintext body
@@ -43,13 +44,5 @@ export class UserService {
                .catch((err) => {
                     console.log("ERROR AYA HA:", err)
                });
-          // await this.mailerService.sendMail({
-          //      to: 'gex.18@hotmail.com',
-          //      from: 'fcommerce@mail.com',
-          //      subject: 'Testing Nest Js node mailer',
-          //      text: 'Welcome',
-          //      html: '<b>Testing Nest Js node mailer service!</b>'
-          // })
-          // return 'Email Sent successfully'
      }
 }
