@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, Request, Res, UseGuards } from '@nestjs/common';
 import { PaymentDetailService } from './payment_detail.service';
 import { Payment_Detail_Dto } from './payment_detail.dto';
 import { sendJson } from 'src/helpers/helpers';
@@ -15,6 +15,18 @@ export class PaymentDetailController {
     async getStripSession(@Param('orderId', ParseIntPipe) orderId: number) {
         const session = await this.payment_Detail_Service.checkoutSession(orderId)
         return sendJson(true, "Session Successfull", session)
+    }
+
+    @Get('redirect')
+    async getStripeStatus(
+        @Query('sid') sid: string,
+        @Query('result') result: string,
+        @Query('paymentId') paymentId: string
+    ) {
+        console.log("Ye chala?")
+        // console.log("Payemnt Id:", paymentId)
+        const session = await this.payment_Detail_Service.stripeRedirect(sid, result, +paymentId)
+        return sendJson(true, "Redirect Succcessfull", session)
     }
 
 

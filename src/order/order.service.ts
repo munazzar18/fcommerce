@@ -109,7 +109,7 @@ export class OrderService {
         const paymentDetail = new Payment_Detail();
         paymentDetail.amount = totalPrice;
         paymentDetail.status = Status.Pending;
-        paymentDetail.provider = "JazzCash";
+        paymentDetail.provider = "Stripe";
         paymentDetail.payment = 0;
         const savedPaymentDetail = await this.paymentRepo.save(paymentDetail);
 

@@ -54,35 +54,49 @@ export class PaymentDetailService {
                 },
             ],
             mode: 'payment',
-            success_url: "https://www.google.com/",//${request.get('host')}/stripe/redirect/success, // Replace with your success URL
-            cancel_url: "https://instagram.com" //${request.get('host')}/stripe/redirect/failed, // Replace with your cancel URL
+            success_url: "http://localhost:3000/payment/completed",//${request.get('host')}/stripe/redirect/success, // Replace with your success URL
+            cancel_url: "https://instagram.com",//${request.get('host')}/stripe/redirect/failed, // Replace with your cancel URL
         });
 
+        const session = {
+            id: checkoutCustomSession.id,
+            url: checkoutCustomSession.url
+        }
 
-        const id = checkoutCustomSession.id
-
-        return checkoutCustomSession.url
+        return session
 
     }
 
-    async stripeRedirect(request, result): Promise<any> {
+    async stripeRedirect(id: string, result: string, paymentId: number) {
+
         if (result !== 'success') {
             throw new BadRequestException('Your payment could not be processed. Please try again');
         }
-        const stripeSessionId = this.decrypt(request.session.stripeSessionId); // Implement your decryption logic here
+        const stripeSessionId = id; // Implement your decryption logic here
+        console.log("Stripe Id:", stripeSessionId)
         if (!stripeSessionId) {
             throw new BadRequestException('Your payment could not be processed. Please try again');
         }
 
-        const stripe = new Stripe(process.env.STRIPE_SECRET);
+        const stripe = new Stripe(process.env.SECRET_KEY);
 
         try {
             const stripeSession = await stripe.checkout.sessions.retrieve(stripeSessionId);
 
             if (stripeSession.payment_status === 'paid') {
+                console.log("status:", stripeSession.payment_status)
                 const amount = stripeSession.amount_total / 100;
 
-                const model = new Payment_Detail();
+                const model = await this.paymentDetail.findOne({
+                    where: {
+                        id: paymentId
+                    }
+                })
+
+                model.status = Status.Paid
+                model.payment = amount
+                model.provider = "Stripe"
+
 
                 // model.apply_for_rental_id = this.decrypt(request.session.id); // Implement your decryption logic here
                 // model.user_id = request.user.id; // Assuming user info is available in the request
@@ -95,8 +109,8 @@ export class PaymentDetailService {
                 // model.status = stripeSession.payment_status;
 
                 // await model.save();
-                await this.wallet(request, amount);
 
+                await this.paymentDetail.save(model)
                 return model;
             } else {
                 throw new BadRequestException('Your payment could not be processed. Please try again');
@@ -104,15 +118,6 @@ export class PaymentDetailService {
         } catch (error) {
             throw new BadRequestException('Error processing payment');
         }
-    }
-
-    async wallet(request, amount): Promise<void> {
-        // Implement wallet logic here
-    }
-
-    decrypt(data: string): string {
-        // Implement decryption logic here
-        return ''; // Return decrypted value
     }
 
     async create(orderId: number, payment: number, authUser: UserEntity) {
