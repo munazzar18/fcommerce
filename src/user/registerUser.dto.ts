@@ -21,6 +21,10 @@ export class RegisterUserDto {
     @IsNotEmpty()
     address: string;
 
+    otp: string;
+
+    expiry_otp: number;
+
     roles: Role;
 
     @IsNotEmpty()

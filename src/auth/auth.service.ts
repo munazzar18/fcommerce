@@ -4,9 +4,11 @@ import { UserService } from 'src/user/user.service';
 import { comparePass, encodedPass } from './bcrypt';
 import { serializedUser } from 'src/user/user.entity';
 import { RegisterUserDto } from 'src/user/registerUser.dto';
+import { Twilio } from 'twilio';
 
 @Injectable()
 export class AuthService {
+    private twilioClient: Twilio;
     constructor(
         private userService: UserService,
         private jwtService: JwtService
@@ -52,9 +54,23 @@ export class AuthService {
             throw new HttpException('user with this email already exists', HttpStatus.CONFLICT)
         }
         else {
+            const accountSid = process.env.TWILIO_SID
+            const authToken = process.env.TWILIO_AUTH_TOKEN
+            const client = this.twilioClient = new Twilio(accountSid, authToken);
+            const OTP = Math.floor(100000 + Math.random() * 900000).toString()
+            const currentTime = new Date().getTime()
+            const expiryTime = currentTime + 180000
+            await client.messages
+                .create({
+                    body: OTP,
+                    from: process.env.TWILIO_NUMBER,
+                    to: data.mobile
+                })
             const password = encodedPass(data.password)
-            const newUser = await this.userService.create({ ...data, password })
-            await this.userService.sendMail(data.email)
+            let otp = OTP
+            let expiry_otp = expiryTime
+            const newUser = await this.userService.create({ ...data, password, otp, expiry_otp })
+            // await this.userService.sendMail(data.email)
             const payload = {
                 email: newUser.email,
                 id: newUser.id,

@@ -1,7 +1,8 @@
-import { ClassSerializerInterceptor, Controller, Get, HttpException, HttpStatus, NotFoundException, Param, ParseIntPipe, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, HttpException, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Query, UseInterceptors } from '@nestjs/common';
 import { sendJson } from 'src/helpers/helpers';
 import { serializedUser } from './user.entity';
 import { UserService } from './user.service';
+import { RegisterUserDto } from './registerUser.dto';
 
 
 @Controller('user')
@@ -47,5 +48,18 @@ export class UserController {
             throw new NotFoundException('user not found for this email')
         }
     }
+
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Get('validateOtp')
+    async checkOtp(
+        @Query('email') email: string,
+        @Query('otp') otp: string
+    ) {
+        const user = await this.userService.sendOTP(email, otp)
+        const savedUser = new serializedUser(user)
+        return sendJson(true, 'Otp validation', savedUser)
+    }
+
+
 
 }

@@ -4,7 +4,7 @@ import { Order } from "src/order/order.entity";
 import { Order_Item } from "src/order_item/order_item.entity";
 import { Product } from "src/product/product.entity";
 import { Role } from "src/roles/role.enum";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Double, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Timestamp } from "typeorm";
 
 
 @Entity()
@@ -29,6 +29,12 @@ export class UserEntity {
 
     @Column({ nullable: false })
     password: string;
+
+    @Column({ nullable: true })
+    otp: string;
+
+    @Column({ type: "numeric", precision: 18, scale: 0, nullable: true })
+    expiry_otp: number;
 
     @Column({ type: 'enum', enum: Role, default: Role.User })
     roles: Role
@@ -58,7 +64,11 @@ export class serializedUser {
     roles: Role;
 
     @Exclude()
-    password: string
+    password: string;
+    @Exclude()
+    otp: string;
+    @Exclude()
+    expiry_otp: number;
 
     constructor(partial: Partial<serializedUser>) {
         Object.assign(this, partial)
