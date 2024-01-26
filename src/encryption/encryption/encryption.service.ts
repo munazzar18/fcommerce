@@ -6,7 +6,7 @@ import { promisify } from 'util';
 export class EncryptionService {
     async encrypt(textToEncrypt: string): Promise<string> {
         const iv = randomBytes(16);
-        const password = 'Afni@Afni13jkl';
+        const password = process.env.ENCRYPTED_KEY
 
         // The key length is dependent on the algorithm.
         // In this case for aes256, it is 32 bytes.
@@ -24,7 +24,7 @@ export class EncryptionService {
     }
 
     async decrypt(encryptedText: string) {
-        const password = 'Afni@Afni13jkl';
+        const password = process.env.ENCRYPTED_KEY
         // Use URL-safe base64 decoding
         const encryptedBuffer = Buffer.from(encryptedText, 'base64url');
 
