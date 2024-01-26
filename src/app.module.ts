@@ -18,6 +18,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import { StripeModule } from 'nestjs-stripe';
+import { EncryptionModule } from './encryption/encryption/encryption.module';
 
 
 @Module({
@@ -70,6 +71,7 @@ import { StripeModule } from 'nestjs-stripe';
     OrderItemModule,
     CartModule,
     PaymentDetailModule,
+    EncryptionModule,
   ],
   controllers: [],
   providers: [],

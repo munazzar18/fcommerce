@@ -7,6 +7,7 @@ import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConstants } from 'src/constants/jwtConstants';
+import { EncryptionService } from 'src/encryption/encryption/encryption.service';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { JwtConstants } from 'src/constants/jwtConstants';
     })
   ],
   controllers: [ProductController],
-  providers: [ProductService, UserService]
+  providers: [ProductService, UserService, EncryptionService]
 })
-export class ProductModule {}
+export class ProductModule { }

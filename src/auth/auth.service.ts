@@ -56,12 +56,12 @@ export class AuthService {
         const OTP = Math.floor(100000 + Math.random() * 900000).toString()
         const currentTime = new Date().getTime()
         const expiryTime = currentTime + 180000
-        // await client.messages
-        //     .create({
-        //         body: OTP,
-        //         from: process.env.TWILIO_NUMBER,
-        //         to: mobile
-        //     })
+        await client.messages
+        // .create({
+        //     body: `Your confirmation code is ${OTP}`,
+        //     from: process.env.TWILIO_NUMBER,
+        //     to: mobile
+        // })
         return {
             OTP,
             expiryTime
