@@ -1,6 +1,7 @@
 import { Cart } from "src/cart/cart.entity";
 import { Category } from "src/category/category.entity";
 import { Order_Item } from "src/order_item/order_item.entity";
+import { Reviews } from "src/reviews/reviews.entity";
 import { UserEntity } from "src/user/user.entity";
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -40,6 +41,9 @@ export class Product {
     @Column({ nullable: false })
     categoryId: number;
 
+    @Column({ default: 0 })
+    total_reviews: number
+
     @OneToMany(() => Order_Item, (orderItems) => orderItems.product)
     orderItems: Order_Item[]
 
@@ -47,7 +51,6 @@ export class Product {
     @OneToMany(() => Cart, (cart) => cart.product)
     @JoinColumn({ name: 'cartId' })
     cart: Cart[]
-
 
     // @ManyToOne(() => Cart, (cart) => cart.products)
     // @JoinColumn({ name: 'cartId' })
@@ -60,5 +63,8 @@ export class Product {
     @ManyToOne(() => Category, (category) => category.product)
     @JoinColumn({ name: "categoryId" })
     category: Category
+
+    @OneToMany(() => Reviews, (review) => review.product)
+    reviews: Reviews[]
 
 }

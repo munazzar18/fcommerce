@@ -12,6 +12,8 @@ export class ProductService {
         @InjectRepository(Product) private productRepo: Repository<Product>
     ) { }
 
+
+
     async allProducts(page: number) {
         const val = 10;
         const products = await this.productRepo.find({
@@ -27,7 +29,7 @@ export class ProductService {
         }
 
         const allProducts = products.map((el) => {
-            const images = el.images.map((img) => "http://localhost:5005" + img)
+            const images = el.images.map((img) => process.env.BASE_URL + img)
             el.images = images
             return el;
         })
@@ -45,7 +47,7 @@ export class ProductService {
             return null
         }
         const allProducts = products.map((el) => {
-            const images = el.images.map((img) => "http://localhost:5005" + img)
+            const images = el.images.map((img) => process.env.BASE_URL + img)
             el.images = images
             return el;
         })
@@ -62,7 +64,7 @@ export class ProductService {
             return null
         }
         const allProducts = products.map((el) => {
-            const images = el.images.map((img) => "http://localhost:5005" + img)
+            const images = el.images.map((img) => process.env.BASE_URL + img)
             el.images = images
             return el;
         })
@@ -86,7 +88,7 @@ export class ProductService {
         })
         const oneProduct = {
             ...product,
-            images: product.images.map((img) => "http://localhost:5005" + img)
+            images: product.images.map((img) => process.env.BASE_URL + img)
         };
 
         return oneProduct;
@@ -105,7 +107,7 @@ export class ProductService {
             return null
         }
         const allProducts = products.map((el) => {
-            const images = el.images.map((img) => "http://localhost:5005" + img)
+            const images = el.images.map((img) => process.env.BASE_URL + img)
             el.images = images
             return el;
         })
@@ -144,7 +146,7 @@ export class ProductService {
         const updatedProduct = await this.productRepo.save(product)
         const oneNewProduct = {
             ...updatedProduct,
-            images: product.images.map((img) => "http://localhost:5005" + img)
+            images: product.images.map((img) => process.env.BASE_URL + img)
         }
         return oneNewProduct
 

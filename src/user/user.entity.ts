@@ -3,6 +3,7 @@ import { Cart } from "src/cart/cart.entity";
 import { Order } from "src/order/order.entity";
 import { Order_Item } from "src/order_item/order_item.entity";
 import { Product } from "src/product/product.entity";
+import { Reviews } from "src/reviews/reviews.entity";
 import { Role } from "src/roles/role.enum";
 import { Column, Double, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Timestamp } from "typeorm";
 
@@ -44,6 +45,9 @@ export class UserEntity {
 
     @OneToMany(() => Order_Item, (orderItem) => orderItem.user)
     orderItem: Order_Item
+
+    @OneToMany(() => Reviews, (review) => review.user)
+    reviews: Reviews[]
 
     @OneToMany(() => Product, (product) => product.user)
     @JoinColumn({ name: 'product' })

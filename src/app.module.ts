@@ -19,6 +19,8 @@ import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import { StripeModule } from 'nestjs-stripe';
 import { EncryptionModule } from './encryption/encryption/encryption.module';
+import { ReviewsModule } from './reviews/reviews.module';
+
 
 
 @Module({
@@ -72,6 +74,7 @@ import { EncryptionModule } from './encryption/encryption/encryption.module';
     CartModule,
     PaymentDetailModule,
     EncryptionModule,
+    ReviewsModule,
   ],
   controllers: [],
   providers: [],

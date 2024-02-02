@@ -1,5 +1,6 @@
 import { Order_Item } from "src/order_item/order_item.entity";
 import { Payment_Detail } from "src/payment_detail/payment_detail.entity";
+import { Reviews } from "src/reviews/reviews.entity";
 import { UserEntity } from "src/user/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -26,4 +27,7 @@ export class Order {
 
     @ManyToOne(() => UserEntity, (user) => user.orders)
     user: UserEntity
+
+    @OneToMany(() => Reviews, (review) => review.order)
+    reviews: Reviews[];
 }
