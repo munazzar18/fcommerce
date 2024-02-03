@@ -69,6 +69,7 @@ export class ReviewsService {
                 newReview.order = order
                 newReview.product = order.orderItems[0].product
                 newReview.user = authUser
+                newReview.review = reviewDto.review
                 product.avg_reviews = newReview.rating
                 await this.productRepo.save(product)
                 return this.reviewRepo.save(newReview)
