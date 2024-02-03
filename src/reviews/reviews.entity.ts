@@ -9,11 +9,17 @@ export class Reviews {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column('float', { nullable: false, default: 0.0 })
+    @Column({ type: 'float', precision: 3, nullable: false, default: 0.0 })
     rating: number
+
+    @Column({ type: 'float', precision: 3, nullable: false, default: 0.0 })
+    total_rating: number
 
     @Column({ nullable: true })
     review: string
+
+    @Column({ default: 0 })
+    total_reviews: number
 
     @CreateDateColumn()
     created_at: Date;

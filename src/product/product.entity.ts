@@ -41,8 +41,8 @@ export class Product {
     @Column({ nullable: false })
     categoryId: number;
 
-    @Column({ default: 0 })
-    total_reviews: number
+    @Column({ type: 'float', precision: 3, default: 0.0 })
+    avg_reviews: number
 
     @OneToMany(() => Order_Item, (orderItems) => orderItems.product)
     orderItems: Order_Item[]

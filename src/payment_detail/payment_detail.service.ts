@@ -35,8 +35,6 @@ export class PaymentDetailService {
         const product = order.orderItems[0].product
         const quantity = order.orderItems[0].quantity
 
-        console.log(quantity)
-
         const checkoutCustomSession = await this.stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [
