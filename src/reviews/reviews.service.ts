@@ -49,35 +49,40 @@ export class ReviewsService {
             }
         })
 
-        const reviews = await this.reviewRepo.find({
+        const review = await this.reviewRepo.findOne({
             where: {
                 product: {
                     id: order.orderItems[0].product.id
                 },
-                user: {
-                    id: authUser.id
-                }
-            }
+            },
+            relations: ['user']
         })
-        if (reviews) {
+        if (review && review.user.id === authUser.id) {
             throw new BadRequestException("You have already given a review")
         }
         else {
-
-            if (reviews.length > 0) {
-                const updatedReviews = reviews.map((review) => {
-                    review.total_reviews += 1
-                    review.total_rating += reviewDto.rating
-                    review.rating = review.total_rating / review.total_reviews
-                    product.avg_reviews = review.rating
-                    return review
-                })
+            if (review && review.user.id !== authUser.id) {
+                const newReview = new Reviews
+                newReview.total_reviews = review.total_reviews + 1
+                newReview.total_rating = review.total_rating + reviewDto.rating
+                newReview.rating = review.total_rating / review.total_reviews
+                newReview.order = order
+                newReview.product = order.orderItems[0].product
+                newReview.user = authUser
+                product.avg_reviews = newReview.rating
                 await this.productRepo.save(product)
-                return await this.reviewRepo.save(updatedReviews)
+                return this.reviewRepo.save(newReview)
+                // review.total_reviews += 1
+                // review.total_rating += reviewDto.rating
+                // review.rating = review.total_rating / review.total_reviews
+                // review.order = order
+                // review.product = order.orderItems[0].product
+                // review.user = authUser
+                // product.avg_reviews = review.rating
+                // await this.productRepo.save(product)
+                // return await this.reviewRepo.save(review)
             }
-
             else {
-
                 const review = new Reviews
                 review.rating = reviewDto.rating
                 review.review = reviewDto?.review
