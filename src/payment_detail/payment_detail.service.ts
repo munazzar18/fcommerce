@@ -48,7 +48,7 @@ export class PaymentDetailService {
                         unit_amount: payment * 100,
                     },
 
-                    quantity: quantity - 1,
+                    quantity: quantity,
                 },
             ],
             mode: 'payment',
