@@ -58,8 +58,12 @@ export class OrderItemService {
             where: {
                 product: {
                     id: selectedProduct.id
+                },
+                user: {
+                    id: authUser.id
                 }
-            }
+            },
+
         })
 
         if (exisistingItem) {
