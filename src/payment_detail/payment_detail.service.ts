@@ -7,6 +7,7 @@ import { Order } from 'src/order/order.entity';
 import { sendJson } from 'src/helpers/helpers';
 import { Status } from './payment_status.enum';
 import Stripe from "stripe"
+import { Order_Status } from 'src/order/order_status_enum';
 
 @Injectable()
 export class PaymentDetailService {
@@ -88,12 +89,15 @@ export class PaymentDetailService {
                 const model = await this.paymentDetail.findOne({
                     where: {
                         id: paymentId
-                    }
+                    },
+                    relations: ['order', 'order.orderItems']
                 })
 
                 model.status = Status.Paid
                 model.payment = amount
                 model.provider = "Stripe"
+                model.order.order_status = Order_Status.shipped
+                model.order.orderItems.forEach((item) => console.log(item))
 
 
                 // model.apply_for_rental_id = this.decrypt(request.session.id); // Implement your decryption logic here

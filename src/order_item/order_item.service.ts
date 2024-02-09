@@ -40,7 +40,14 @@ export class OrderItemService {
             },
             relations: ['product']
         })
-        return orderItem
+
+        const allOrders = orderItem.map((item) => {
+            const itemImages = item.product.images.map((img) => process.env.BASE_URL + img)
+            item.product.images = itemImages
+            return item
+        })
+
+        return allOrders
     }
 
     async create(productId: number, quantity: number, authUser: UserEntity) {
