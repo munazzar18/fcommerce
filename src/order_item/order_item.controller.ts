@@ -35,13 +35,8 @@ export class OrderItemController {
     async getByUserId(@Param('userId', ParseIntPipe) userId: number) {
         const orderItem = await this.orderItemService.getByUserId(userId)
         if (orderItem) {
-            let userEnt: UserEntity
-            orderItem.forEach((user) => {
-                userEnt = user.user
-                return new serializedUser(userEnt)
-            })
-            const user = new serializedUser(userEnt)
-            return sendJson(true, "Order Item found successfully", { orderItem, user })
+         const allItems = orderItem.map((item) => new serializedUser(item.user) )
+            return sendJson(true, "Order Item found successfully", allItems)
         } else {
             return sendJson(false, "No items found")
         }
