@@ -30,5 +30,6 @@ export class Order_Item {
 
     @ManyToOne(() => Product, product => product.orderItems)
     product: Product;
+    item: import("c:/Users/DELL/Desktop/NestJs/fcommerce/src/user/user.entity").serializedUser;
 
 }

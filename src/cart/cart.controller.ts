@@ -33,7 +33,15 @@ export class CartController {
     @UseGuards(AuthGuard)
     async createcart(@Body() createCart: CreateCartDto, @Request() req) {
         const userId: UserEntity = req.user
-        const cart = await this.cartService.create(createCart.productId, userId)
+        const cart = await this.cartService.create(createCart.productId, createCart.quantity, userId)
         return sendJson(true, "Product added to cart successfully", cart)
+    }
+
+    @Post('delete')
+    @UseGuards(AuthGuard)
+    async deleteCart(@Body() createCart: CreateCartDto, @Request() req) {
+        const user: UserEntity = req.user
+        const cartItem = await this.cartService.deleteItem(createCart.productId, createCart.quantity, user)
+        return sendJson(true, "Product removed from cart successfully", cartItem)
     }
 }

@@ -30,10 +30,15 @@ export class CartService {
             },
             relations: ['product']
         })
-        return cart
+        const allCarts = cart.map((item) => {
+            const itemImages = item.product.images.map((img) => process.env.BASE_URL + img)
+            item.product.images = itemImages
+            return item
+        })
+        return allCarts
     }
 
-    async create(productId: number, authUser: UserEntity) {
+    async create(productId: number, quantity: number, authUser: UserEntity) {
         const selectedProduct = await this.productRepo.findOne({
             where: { id: productId }
         });
@@ -42,27 +47,22 @@ export class CartService {
             throw new NotFoundException('No product to add in cart!');
         }
 
-        const productInCart = await this.cartRepo.find()
-        let grandTotal = []
-        let calculatedTotal = 0
-        if(productInCart.length > 0){
-             grandTotal = productInCart.map((el) => el.quantity)
-             calculatedTotal = grandTotal ? grandTotal.reduce((el, cl) => el + cl) : 0
-            
-        }
-
         const existingProduct = await this.cartRepo.findOne({
             where: {
                 product: {
                     id: productId
+                },
+                user: {
+                    id: authUser.id
                 }
             }
         })
+
         if (existingProduct) {
             existingProduct.user = authUser;
             existingProduct.product = selectedProduct
-            existingProduct.quantity += 1;
-            existingProduct.total = calculatedTotal ? calculatedTotal + 1 : + 1;
+            existingProduct.quantity += quantity
+            existingProduct.totalPrice = existingProduct.quantity * selectedProduct.price
             await this.cartRepo.save(existingProduct)
             return existingProduct
         }
@@ -71,9 +71,44 @@ export class CartService {
             cart.user = authUser
             cart.product = selectedProduct
             cart.quantity = 1;
-            cart.total = calculatedTotal ? calculatedTotal + 1 : 1;
+            cart.totalPrice = selectedProduct.price
             await this.cartRepo.save(cart)
             return cart
+        }
+    }
+    async deleteItem(productId: number, quantity: number, authUser: UserEntity) {
+        const selectedProduct = await this.productRepo.findOne({
+            where: {
+                id: productId,
+            }
+        });
+
+        if (!selectedProduct) {
+            throw new NotFoundException('No product found for this id');
+        }
+
+        const exisistingItem = await this.cartRepo.findOne({
+            where: {
+                product: {
+                    id: selectedProduct.id
+                }
+            }
+        });
+
+        if (exisistingItem.quantity > 0) {
+            const remainingQuantity = exisistingItem.quantity - quantity;
+
+            if (remainingQuantity > 0) {
+                exisistingItem.quantity = remainingQuantity;
+                exisistingItem.totalPrice = remainingQuantity * selectedProduct.price;
+                await this.cartRepo.save(exisistingItem);
+                return exisistingItem;
+            } else {
+                await this.cartRepo.delete(exisistingItem.id);
+                return null;
+            }
+        } else {
+            return null;
         }
     }
 }

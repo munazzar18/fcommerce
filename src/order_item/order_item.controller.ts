@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Param, ParseIntPipe, Post, Request, UseGuards, UseInterceptors } from '@nestjs/common';
 import { OrderItemService } from './order_item.service';
 import { sendJson } from 'src/helpers/helpers';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { OrderItemDto } from './order_item.dto';
-import { UserEntity } from 'src/user/user.entity';
+import { UserEntity, serializedUser } from 'src/user/user.entity';
 
 @Controller('order-item')
 export class OrderItemController {
@@ -30,11 +30,18 @@ export class OrderItemController {
         }
     }
 
+    @UseInterceptors(ClassSerializerInterceptor)
     @Get('userId/:userId')
     async getByUserId(@Param('userId', ParseIntPipe) userId: number) {
         const orderItem = await this.orderItemService.getByUserId(userId)
         if (orderItem) {
-            return sendJson(true, "Order Item found successfully", orderItem)
+            let userEnt: UserEntity
+            orderItem.forEach((user) => {
+                userEnt = user.user
+                return new serializedUser(userEnt)
+            })
+            const user = new serializedUser(userEnt)
+            return sendJson(true, "Order Item found successfully", { orderItem, user })
         } else {
             return sendJson(false, "No items found")
         }

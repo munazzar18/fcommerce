@@ -38,7 +38,7 @@ export class OrderItemService {
                     id: userId
                 }
             },
-            relations: ['product']
+            relations: ['product', 'user']
         })
 
         const allOrders = orderItem.map((item) => {
@@ -76,8 +76,8 @@ export class OrderItemService {
         if (exisistingItem) {
             exisistingItem.user = authUser;
             exisistingItem.product = selectedProduct;
-            exisistingItem.totalPrice = exisistingItem.totalPrice = (exisistingItem.quantity + quantity) * selectedProduct.price
             exisistingItem.quantity += quantity;
+            exisistingItem.totalPrice = exisistingItem.quantity * selectedProduct.price
             await this.orderItemRepo.save(exisistingItem)
             return exisistingItem
         }

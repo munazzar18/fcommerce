@@ -12,7 +12,7 @@ export class Cart {
     quantity: number;
 
     @Column()
-    total: number;
+    totalPrice: number;
 
     @CreateDateColumn()
     created_at: Date;
