@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, ParseArrayPipe, ParseIntPipe, Post, Put, Query, Req, Request, Res, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, NotFoundException, Param, ParseArrayPipe, ParseIntPipe, Post, Put, Query, Req, Request, Res, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { sendJson } from 'src/helpers/helpers';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -6,7 +6,7 @@ import { RolesGuard } from 'src/roles/roles.guard';
 import { CreateProductDto, UpdateProductDto, UploadFileDto } from './productDto.dto';
 import { Roles } from 'src/roles/role.decorator';
 import { Role } from 'src/roles/role.enum';
-import { UserEntity } from 'src/user/user.entity';
+import { UserEntity, serializedUser } from 'src/user/user.entity';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
@@ -69,11 +69,14 @@ export class ProductController {
             throw new NotFoundException(`No products found for this ${search}`)
         }
     }
+
+    @UseInterceptors(ClassSerializerInterceptor)
     @Get('/:id')
     async getById(@Param('id', ParseIntPipe) id: number) {
         const product = await this.productService.productById(id)
         if (product) {
-            return sendJson(true, 'Product found successfully', product)
+            const user = new serializedUser(product.user)
+            return sendJson(true, 'Product found successfully', { ...product, user })
         } else {
             throw new NotFoundException('No product found')
         }

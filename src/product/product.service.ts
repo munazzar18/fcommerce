@@ -84,13 +84,12 @@ export class ProductService {
             where: {
                 id,
             },
-            relations: { category: true }
+            relations: ['category', 'user']
         })
         const oneProduct = {
             ...product,
             images: product.images.map((img) => process.env.BASE_URL + img)
         };
-
         return oneProduct;
 
 
