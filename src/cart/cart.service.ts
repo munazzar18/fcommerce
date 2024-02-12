@@ -64,13 +64,13 @@ export class CartService {
             .where('cart.user = :userId', { userId: authUser.id })
             .getRawOne()
 
-        const totalCount = totalQuantity ? +totalQuantity.totalQuantity + quantity : quantity;
+        const totalCount = totalQuantity ? +totalQuantity + quantity : quantity;
 
         if (existingProduct) {
             existingProduct.user = authUser;
             existingProduct.product = selectedProduct
             existingProduct.quantity += quantity
-            existingProduct.totalCount = totalCount
+            existingProduct.totalCount = existingProduct.totalCount ? totalCount + quantity : totalCount
             existingProduct.totalPrice = existingProduct.quantity * selectedProduct.price
             await this.cartRepo.save(existingProduct)
             return existingProduct
@@ -81,7 +81,7 @@ export class CartService {
             cart.user = authUser
             cart.product = selectedProduct
             cart.quantity = quantity;
-            cart.totalCount = totalCount
+            cart.totalCount = cart.totalCount ? totalCount + quantity : totalCount
             cart.totalPrice = selectedProduct.price
             await this.cartRepo.save(cart)
             return cart
