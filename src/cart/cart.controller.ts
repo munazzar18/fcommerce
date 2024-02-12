@@ -34,7 +34,7 @@ export class CartController {
     async createcart(@Body() createCart: CreateCartDto, @Request() req) {
         const userId: UserEntity = req.user
         const cart = await this.cartService.create(createCart.productId, createCart.quantity, userId)
-        return sendJson(true, "Product added to cart successfully", cart)
+        return sendJson(true, "Item added to cart successfully", cart)
     }
 
     @Post('delete')
@@ -42,6 +42,6 @@ export class CartController {
     async deleteCart(@Body() createCart: CreateCartDto, @Request() req) {
         const user: UserEntity = req.user
         const cartItem = await this.cartService.deleteItem(createCart.productId, createCart.quantity, user)
-        return sendJson(true, "Product removed from cart successfully", cartItem)
+        return sendJson(true, "Item removed from cart successfully", cartItem)
     }
 }
