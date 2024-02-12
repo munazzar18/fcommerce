@@ -1,7 +1,7 @@
 
 import { Product } from "src/product/product.entity";
 import { UserEntity } from "src/user/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { AfterLoad, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Cart {
@@ -14,15 +14,16 @@ export class Cart {
     @Column()
     totalPrice: number;
 
+    @Column({ default: 0 })
+    totalCount: number;
+
+
     @CreateDateColumn()
     created_at: Date;
 
     @UpdateDateColumn()
     updated_at: Date;
 
-    // @OneToMany(() => Product, (product) => product.cart)
-    // @JoinColumn({ name: "productIds" })
-    // products: Product[];
 
     @ManyToOne(() => Product, (product) => product.cart)
     @JoinColumn({ name: "productId" })
@@ -31,6 +32,5 @@ export class Cart {
     @ManyToOne(() => UserEntity, (user) => user.cart)
     @JoinColumn({ name: "userId" })
     user: UserEntity
-
 
 }

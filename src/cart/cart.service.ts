@@ -50,7 +50,7 @@ export class CartService {
         const existingProduct = await this.cartRepo.findOne({
             where: {
                 product: {
-                    id: productId
+                    id: selectedProduct.id
                 },
                 user: {
                     id: authUser.id
@@ -58,19 +58,30 @@ export class CartService {
             }
         })
 
+        const totalQuantity = await this.cartRepo
+            .createQueryBuilder('cart')
+            .select('SUM(cart.quantity)', 'totalQuantity')
+            .where('cart.user = :userId', { userId: authUser.id })
+            .getRawOne()
+
+        const totalCount = totalQuantity ? +totalQuantity.totalQuantity + quantity : quantity;
+
         if (existingProduct) {
             existingProduct.user = authUser;
             existingProduct.product = selectedProduct
             existingProduct.quantity += quantity
+            existingProduct.totalCount = totalCount
             existingProduct.totalPrice = existingProduct.quantity * selectedProduct.price
             await this.cartRepo.save(existingProduct)
             return existingProduct
         }
+
         else {
             const cart = new Cart()
             cart.user = authUser
             cart.product = selectedProduct
-            cart.quantity = 1;
+            cart.quantity = quantity;
+            cart.totalCount = totalCount
             cart.totalPrice = selectedProduct.price
             await this.cartRepo.save(cart)
             return cart
