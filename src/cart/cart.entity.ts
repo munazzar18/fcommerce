@@ -14,10 +14,6 @@ export class Cart {
     @Column()
     totalPrice: number;
 
-    @Column({ default: 0 })
-    totalCount: number;
-
-
     @CreateDateColumn()
     created_at: Date;
 

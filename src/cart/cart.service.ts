@@ -57,31 +57,19 @@ export class CartService {
                 }
             }
         })
-
-        const totalQuantity = await this.cartRepo
-            .createQueryBuilder('cart')
-            .select('SUM(cart.quantity)', 'totalQuantity')
-            .where('cart.user = :userId', { userId: authUser.id })
-            .getRawOne()
-
-        const totalCount = totalQuantity ? +totalQuantity + quantity : quantity;
-
         if (existingProduct) {
             existingProduct.user = authUser;
             existingProduct.product = selectedProduct
             existingProduct.quantity += quantity
-            existingProduct.totalCount = existingProduct.totalCount ? totalCount + quantity : totalCount
             existingProduct.totalPrice = existingProduct.quantity * selectedProduct.price
             await this.cartRepo.save(existingProduct)
             return existingProduct
         }
-
         else {
             const cart = new Cart()
             cart.user = authUser
             cart.product = selectedProduct
             cart.quantity = quantity;
-            cart.totalCount = cart.totalCount ? totalCount + quantity : totalCount
             cart.totalPrice = selectedProduct.price
             await this.cartRepo.save(cart)
             return cart
