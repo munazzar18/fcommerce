@@ -122,7 +122,7 @@ export class PaymentDetailService {
         }
     }
 
-    async create(orderId: number, payment: number, authUser: UserEntity) {
+    async create(orderId: number, authUser: UserEntity) {
         const order = await this.order.findOne({
             where: {
                 id: orderId
@@ -133,17 +133,16 @@ export class PaymentDetailService {
             throw new NotFoundException(sendJson(false, "Order not found"))
         }
         if (order.payment_detail) {
-            if (order.total === payment) {
-                order.payment_detail.payment = payment
-                order.payment_detail.status = Status.Paid
-                await this.paymentDetail.save(order.payment_detail)
-            } else {
-                throw new BadRequestException(sendJson(false, "Amount does not matched"))
-            }
+            order.order_status = Order_Status.shipped
+            order.user = authUser
+            order.payment_detail.provider = "Cash on Delivery"
+            order.payment_detail.amount = order.total
+            order.payment_detail.status = Status.Paid
+            await this.paymentDetail.save(order.payment_detail)
+        } else {
+            throw new BadRequestException(sendJson(false, "Amount does not matched"))
         }
-        order.total = payment
-
         return order.payment_detail
-
     }
+
 }

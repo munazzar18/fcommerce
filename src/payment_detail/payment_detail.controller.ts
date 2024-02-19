@@ -30,11 +30,11 @@ export class PaymentDetailController {
     }
 
 
-    @Post()
+    @Post("cash-on-delivery")
     @UseGuards(AuthGuard)
     async createPayment(@Body() paymentDto: Payment_Detail_Dto, @Request() req) {
         const authUser: UserEntity = req.user
-        const payment = await this.payment_Detail_Service.create(paymentDto.orderId, paymentDto.payment, authUser)
+        const payment = await this.payment_Detail_Service.create(paymentDto.orderId, authUser)
         return sendJson(true, "Payment Successfull, Order completed", payment)
     }
 

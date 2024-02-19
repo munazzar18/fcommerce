@@ -26,10 +26,10 @@ import { ReviewsModule } from './reviews/reviews.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
+      type: "mysql",
+      host: "localhost",
       port: 3306,
-      username: 'root',
+      username: "root",
       password: '',
       database: 'fcommerce',
       autoLoadEntities: true,
